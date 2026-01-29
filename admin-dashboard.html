@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - FitTrack CUET</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/pages.css">
+    <link rel="stylesheet" href="css/additional.css">
+    <link rel="stylesheet" href="css/gym-theme.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar admin-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-dumbbell"></i>
+                <span>FitTrack CUET <span class="admin-badge">Admin</span></span>
+            </div>
+            
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="admin-dashboard.html" class="active"><i class="fas fa-chart-line"></i> Overview</a></li>
+                <li><a href="#users"><i class="fas fa-users"></i> Users</a></li>
+                <li><a href="#equipment"><i class="fas fa-dumbbell"></i> Equipment</a></li>
+                <li><a href="#reports"><i class="fas fa-file-alt"></i> Reports</a></li>
+                <li><a href="dashboard.html"><i class="fas fa-eye"></i> User View</a></li>
+            </ul>
+            
+            <div class="nav-user">
+                <div class="notification-icon">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">5</span>
+                </div>
+                <div class="user-dropdown">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=dc2626&color=fff" alt="Admin">
+                    <span class="user-name">Admin</span>
+                    <i class="fas fa-chevron-down"></i>
+                    <div class="dropdown-menu">
+                        <a href="#"><i class="fas fa-user"></i> Profile</a>
+                        <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                        <a href="index.html" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content admin-content">
+        <div class="container">
+            <!-- Page Header -->
+            <section class="page-header">
+                <div>
+                    <h1><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h1>
+                    <p>Manage gym operations and monitor activities</p>
+                </div>
+                <div class="admin-quick-actions">
+                    <button class="btn btn-primary" onclick="openAddEquipmentModal()">
+                        <i class="fas fa-plus"></i> Add Equipment
+                    </button>
+                    <button class="btn btn-secondary">
+                        <i class="fas fa-file-download"></i> Export Data
+                    </button>
+                </div>
+            </section>
+
+            <!-- Key Metrics -->
+            <section class="admin-metrics">
+                <div class="metric-card">
+                    <div class="metric-icon blue">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="metric-content">
+                        <h3>1,247</h3>
+                        <p>Total Members</p>
+                        <small class="metric-change positive"><i class="fas fa-arrow-up"></i> 12% this month</small>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon green">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div class="metric-content">
+                        <h3>342</h3>
+                        <p>Active Today</p>
+                        <small class="metric-change positive"><i class="fas fa-arrow-up"></i> 8% vs yesterday</small>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon orange">
+                        <i class="fas fa-dumbbell"></i>
+                    </div>
+                    <div class="metric-content">
+                        <h3>52</h3>
+                        <p>Equipment Items</p>
+                        <small class="metric-change neutral">3 maintenance needed</small>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon purple">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="metric-content">
+                        <h3>8,549</h3>
+                        <p>Workouts This Month</p>
+                        <small class="metric-change positive"><i class="fas fa-arrow-up"></i> 15% growth</small>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Gym Status Control -->
+            <section class="gym-control-section">
+                <h2 class="section-title">Gym Status Control</h2>
+                <div class="control-panel">
+                    <div class="control-item">
+                        <div class="control-header">
+                            <h3>Operational Status</h3>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="gymStatus" checked>
+                                <label for="gymStatus"></label>
+                            </div>
+                        </div>
+                        <p class="status-text open">Gym is currently <strong>Open</strong></p>
+                    </div>
+
+                    <div class="control-item">
+                        <div class="control-header">
+                            <h3>Current Capacity</h3>
+                            <span class="capacity-number">32/50</span>
+                        </div>
+                        <div class="capacity-bar">
+                            <div class="capacity-fill" style="width: 64%"></div>
+                        </div>
+                        <p class="capacity-status">64% capacity</p>
+                    </div>
+
+                    <div class="control-item">
+                        <div class="control-header">
+                            <h3>Quick Announcements</h3>
+                        </div>
+                        <textarea class="announcement-input" placeholder="Post an announcement to all users..."></textarea>
+                        <button class="btn btn-primary btn-sm">
+                            <i class="fas fa-bullhorn"></i> Post Announcement
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recent Activity -->
+            <section class="activity-overview">
+                <h2 class="section-title">Recent Activity</h2>
+                <div class="activity-table-container">
+                    <table class="activity-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>User</th>
+                                <th>Activity</th>
+                                <th>Duration</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>10:45 AM</td>
+                                <td>
+                                    <div class="user-cell">
+                                        <img src="https://ui-avatars.com/api/?name=John+Doe&background=4f46e5&color=fff" alt="User">
+                                        <span>John Doe (1801001)</span>
+                                    </div>
+                                </td>
+                                <td>Strength Training</td>
+                                <td>45 min</td>
+                                <td><span class="badge badge-active">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td>10:30 AM</td>
+                                <td>
+                                    <div class="user-cell">
+                                        <img src="https://ui-avatars.com/api/?name=Sarah+Khan&background=059669&color=fff" alt="User">
+                                        <span>Sarah Khan (1801045)</span>
+                                    </div>
+                                </td>
+                                <td>Cardio Session</td>
+                                <td>30 min</td>
+                                <td><span class="badge badge-completed">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td>10:15 AM</td>
+                                <td>
+                                    <div class="user-cell">
+                                        <img src="https://ui-avatars.com/api/?name=Ahmed+Ali&background=dc2626&color=fff" alt="User">
+                                        <span>Ahmed Ali (1801089)</span>
+                                    </div>
+                                </td>
+                                <td>Full Body Workout</td>
+                                <td>60 min</td>
+                                <td><span class="badge badge-active">Active</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Equipment Management -->
+            <section class="equipment-management">
+                <h2 class="section-title">Equipment Management</h2>
+                <div class="equipment-filters">
+                    <input type="text" class="search-input" placeholder="Search equipment...">
+                    <select class="filter-select">
+                        <option>All Categories</option>
+                        <option>Cardio</option>
+                        <option>Strength</option>
+                        <option>Free Weights</option>
+                    </select>
+                    <select class="filter-select">
+                        <option>All Status</option>
+                        <option>Available</option>
+                        <option>In Use</option>
+                        <option>Maintenance</option>
+                    </select>
+                </div>
+
+                <div class="equipment-table-container">
+                    <table class="equipment-table">
+                        <thead>
+                            <tr>
+                                <th>Equipment</th>
+                                <th>Category</th>
+                                <th>Quantity</th>
+                                <th>Status</th>
+                                <th>Last Maintenance</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="equipment-cell">
+                                        <i class="fas fa-running"></i>
+                                        <span>Treadmill</span>
+                                    </div>
+                                </td>
+                                <td>Cardio</td>
+                                <td>8</td>
+                                <td><span class="badge badge-available">Available</span></td>
+                                <td>Dec 15, 2025</td>
+                                <td>
+                                    <button class="btn-icon" title="Edit"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon" title="Delete"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="equipment-cell">
+                                        <i class="fas fa-weight-hanging"></i>
+                                        <span>Bench Press</span>
+                                    </div>
+                                </td>
+                                <td>Strength</td>
+                                <td>5</td>
+                                <td><span class="badge badge-available">Available</span></td>
+                                <td>Dec 20, 2025</td>
+                                <td>
+                                    <button class="btn-icon" title="Edit"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon" title="Delete"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="equipment-cell">
+                                        <i class="fas fa-bicycle"></i>
+                                        <span>Exercise Bike</span>
+                                    </div>
+                                </td>
+                                <td>Cardio</td>
+                                <td>6</td>
+                                <td><span class="badge badge-maintenance">Maintenance</span></td>
+                                <td>Jan 5, 2026</td>
+                                <td>
+                                    <button class="btn-icon" title="Edit"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon" title="Delete"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- User Statistics -->
+            <section class="user-stats-section">
+                <h2 class="section-title">User Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-chart-card">
+                        <h3>Department-wise Distribution</h3>
+                        <div class="chart-placeholder">
+                            <i class="fas fa-chart-pie"></i>
+                            <p>Chart visualization</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-chart-card">
+                        <h3>Monthly Workout Trends</h3>
+                        <div class="chart-placeholder">
+                            <i class="fas fa-chart-line"></i>
+                            <p>Chart visualization</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Add Equipment Modal -->
+    <div class="modal" id="addEquipmentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-plus-circle"></i> Add New Equipment</h2>
+                <button class="modal-close" onclick="closeAddEquipmentModal()">&times;</button>
+            </div>
+            <form id="addEquipmentForm">
+                <div class="form-group">
+                    <label for="equipmentName">Equipment Name</label>
+                    <input type="text" id="equipmentName" name="name" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="equipmentCategory">Category</label>
+                        <select id="equipmentCategory" name="category" required>
+                            <option value="">Select Category</option>
+                            <option value="cardio">Cardio</option>
+                            <option value="strength">Strength</option>
+                            <option value="free-weights">Free Weights</option>
+                            <option value="functional">Functional Training</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="equipmentQuantity">Quantity</label>
+                        <input type="number" id="equipmentQuantity" name="quantity" min="1" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="equipmentDescription">Description</label>
+                    <textarea id="equipmentDescription" name="description" rows="3"></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeAddEquipmentModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Add Equipment
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 FitTrack CUET. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="rules-safety.html">Rules & Safety</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Contact Support</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

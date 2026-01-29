@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitTrack CUET - Testing Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8fafc;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 3rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #4f46e5;
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+        }
+        
+        h2 {
+            color: #1e293b;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #4f46e5;
+        }
+        
+        h3 {
+            color: #334155;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .intro {
+            background: #f0f9ff;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid #0ea5e9;
+        }
+        
+        .page-link {
+            display: inline-block;
+            background: #4f46e5;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            transition: all 0.3s;
+        }
+        
+        .page-link:hover {
+            background: #3730a3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+        
+        .test-section {
+            background: #fef3c7;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            border-left: 4px solid #f59e0b;
+        }
+        
+        ul {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        li {
+            margin-bottom: 0.5rem;
+        }
+        
+        code {
+            background: #e2e8f0;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .warning {
+            background: #fee2e2;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border-left: 4px solid #dc2626;
+            margin: 1rem 0;
+        }
+        
+        .success {
+            background: #d1fae5;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border-left: 4px solid #059669;
+            margin: 1rem 0;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .feature-card {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .feature-card h4 {
+            color: #4f46e5;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏋️ FitTrack CUET - Testing Guide</h1>
+        
+        <div class="intro">
+            <p><strong>Welcome to FitTrack CUET!</strong></p>
+            <p>This guide will help you test all features of the gymnasium management system. The application is a fully functional frontend prototype with simulated data storage using LocalStorage.</p>
+        </div>
+
+        <h2>🚀 Quick Start</h2>
+        <p>Start testing by visiting any of these pages:</p>
+        <div style="margin: 1.5rem 0;">
+            <a href="index.html" class="page-link">🔐 Login Page</a>
+            <a href="register.html" class="page-link">📝 Register</a>
+            <a href="dashboard.html" class="page-link">📊 Dashboard</a>
+            <a href="admin-dashboard.html" class="page-link">⚙️ Admin Panel</a>
+        </div>
+
+        <h2>📋 Testing Checklist</h2>
+
+        <h3>1. Authentication System</h3>
+        <div class="test-section">
+            <strong>Test Steps:</strong>
+            <ul>
+                <li>Go to <code>index.html</code></li>
+                <li>Enter any Student ID (e.g., 1801001)</li>
+                <li>Enter any password</li>
+                <li>Click "Login" button</li>
+                <li>Test password visibility toggle</li>
+                <li>Try "Register here" link</li>
+            </ul>
+            <strong>Expected Result:</strong> Successful login with redirect to dashboard
+        </div>
+
+        <h3>2. User Registration</h3>
+        <div class="test-section">
+            <strong>Test Steps:</strong>
+            <ul>
+                <li>Go to <code>register.html</code></li>
+                <li>Fill in all required fields</li>
+                <li>Test password validation (min 8 chars, uppercase, lowercase, numbers)</li>
+                <li>Confirm password match</li>
+                <li>Accept terms and conditions</li>
+                <li>Click "Create Account"</li>
+            </ul>
+            <strong>Expected Result:</strong> Account created with redirect to login
+        </div>
+
+        <h3>3. Dashboard Features</h3>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h4>Welcome Section</h4>
+                <ul>
+                    <li>Personalized greeting</li>
+                    <li>Quick action buttons</li>
+                </ul>
+            </div>
+            <div class="feature-card">
+                <h4>Gym Status</h4>
+                <ul>
+                    <li>Operating hours</li>
+                    <li>Current capacity</li>
+                    <li>Environment info</li>
+                </ul>
+            </div>
+            <div class="feature-card">
+                <h4>Statistics</h4>
+                <ul>
+                    <li>Total workouts</li>
+                    <li>Monthly count</li>
+                    <li>Current streak</li>
+                </ul>
+            </div>
+            <div class="feature-card">
+                <h4>Equipment Catalog</h4>
+                <ul>
+                    <li>Filter by category</li>
+                    <li>Availability status</li>
+                    <li>Equipment details</li>
+                </ul>
+            </div>
+        </div>
+
+        <h3>4. Workout History</h3>
+        <div class="test-section">
+            <strong>Test Steps:</strong>
+            <ul>
+                <li>Click "Log New Workout" button</li>
+                <li>Fill in workout details (date, type, duration)</li>
+                <li>Add multiple exercises with sets/reps/weights</li>
+                <li>Select intensity level</li>
+                <li>Add notes (optional)</li>
+                <li>Save workout</li>
+                <li>Test filters (date range, type, search)</li>
+                <li>View and delete workouts</li>
+            </ul>
+        </div>
+
+        <h3>5. AI Gym Instructor</h3>
+        <div class="test-section">
+            <strong>Test Features:</strong>
+            <ul>
+                <li>Quick prompt buttons for common questions</li>
+                <li>Type custom fitness questions</li>
+                <li>Test responses for:
+                    <ul>
+                        <li>Workout plans</li>
+                        <li>Equipment usage</li>
+                        <li>Injury prevention</li>
+                        <li>Warm-up routines</li>
+                        <li>Progressive overload tips</li>
+                    </ul>
+                </li>
+                <li>Check typing indicator animation</li>
+                <li>Test message formatting (bold, lists)</li>
+            </ul>
+        </div>
+
+        <h3>6. Medical Profile</h3>
+        <div class="test-section">
+            <strong>Test Steps:</strong>
+            <ul>
+                <li>Fill in basic health info (age, height, weight)</li>
+                <li>Check automatic BMI calculation</li>
+                <li>Select blood group</li>
+                <li>Check chronic conditions</li>
+                <li>Enter past injuries and medications</li>
+                <li>Toggle allergy information</li>
+                <li>Set fitness goals and limitations</li>
+                <li>Add emergency contact</li>
+                <li>Save profile (data persists in LocalStorage)</li>
+            </ul>
+        </div>
+
+        <h3>7. Diet Plan</h3>
+        <div class="test-section">
+            <strong>Test Features:</strong>
+            <ul>
+                <li>View nutrition goals (calories, macros)</li>
+                <li>Set diet preferences:
+                    <ul>
+                        <li>Diet type (balanced, high-protein, etc.)</li>
+                        <li>Meals per day (3-6)</li>
+                        <li>Target calories</li>
+                    </ul>
+                </li>
+                <li>Select dietary restrictions</li>
+                <li>View today's meal plan with:
+                    <ul>
+                        <li>Meal times</li>
+                        <li>Food items</li>
+                        <li>Calorie counts</li>
+                        <li>Macro breakdown</li>
+                    </ul>
+                </li>
+                <li>Switch between days in weekly overview</li>
+                <li>Generate new diet plan</li>
+            </ul>
+        </div>
+
+        <h3>8. Rules & Safety</h3>
+        <div class="test-section">
+            <strong>Test Elements:</strong>
+            <ul>
+                <li>Read safety highlights</li>
+                <li>Review 10 general gym rules</li>
+                <li>Check safety guidelines</li>
+                <li>View injury prevention tips</li>
+                <li>Review equipment usage guidelines</li>
+                <li>See prohibited activities</li>
+                <li>Acknowledge rules (checkbox + button)</li>
+                <li>Check acknowledgment persistence</li>
+            </ul>
+        </div>
+
+        <h3>9. Admin Dashboard</h3>
+        <div class="test-section">
+            <strong>Test Features:</strong>
+            <ul>
+                <li>View key metrics (members, active users, equipment)</li>
+                <li>Toggle gym status (open/closed)</li>
+                <li>Monitor current capacity</li>
+                <li>Post announcements</li>
+                <li>View recent activity table</li>
+                <li>Manage equipment:
+                    <ul>
+                        <li>Search equipment</li>
+                        <li>Filter by category/status</li>
+                        <li>Add new equipment</li>
+                        <li>Edit/delete equipment</li>
+                    </ul>
+                </li>
+                <li>Export data functionality</li>
+            </ul>
+        </div>
+
+        <h2>📱 Responsive Design Testing</h2>
+        <div class="test-section">
+            <strong>Test on different screen sizes:</strong>
+            <ul>
+                <li><strong>Desktop:</strong> 1920x1080, 1366x768</li>
+                <li><strong>Tablet:</strong> 768x1024 (iPad)</li>
+                <li><strong>Mobile:</strong> 375x667 (iPhone), 360x640 (Android)</li>
+            </ul>
+            <strong>Check:</strong>
+            <ul>
+                <li>Navigation menu (mobile hamburger)</li>
+                <li>Form layouts</li>
+                <li>Grid responsiveness</li>
+                <li>Button sizes</li>
+                <li>Text readability</li>
+            </ul>
+        </div>
+
+        <h2>🎨 UI/UX Testing</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h4>Animations</h4>
+                <ul>
+                    <li>Hover effects</li>
+                    <li>Button clicks</li>
+                    <li>Page transitions</li>
+                    <li>Loading states</li>
+                </ul>
+            </div>
+            <div class="feature-card">
+                <h4>Notifications</h4>
+                <ul>
+                    <li>Success messages</li>
+                    <li>Error messages</li>
+                    <li>Info alerts</li>
+                    <li>Auto-dismiss</li>
+                </ul>
+            </div>
+            <div class="feature-card">
+                <h4>Forms</h4>
+                <ul>
+                    <li>Field validation</li>
+                    <li>Error states</li>
+                    <li>Submit behavior</li>
+                    <li>Reset functionality</li>
+                </ul>
+            </div>
+            <div class="feature-card">
+                <h4>Modals</h4>
+                <ul>
+                    <li>Open/close</li>
+                    <li>Backdrop click</li>
+                    <li>Form submission</li>
+                    <li>Animations</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2>💾 Data Persistence Testing</h2>
+        <div class="test-section">
+            <strong>Test LocalStorage:</strong>
+            <ul>
+                <li>Login → Check userData in localStorage</li>
+                <li>Create workout → Refresh page → Check if workout exists</li>
+                <li>Save medical profile → Logout → Login → Check if data persists</li>
+                <li>Update diet preferences → Navigate away → Return → Check saved preferences</li>
+                <li>Acknowledge rules → Close browser → Reopen → Check acknowledgment status</li>
+            </ul>
+        </div>
+
+        <div class="success">
+            <strong>✅ Testing Complete!</strong>
+            <p>If all features work as expected, the frontend is ready for backend integration.</p>
+        </div>
+
+        <h2>🐛 Known Limitations</h2>
+        <div class="warning">
+            <ul>
+                <li>No real authentication (accepts any credentials)</li>
+                <li>Data stored in browser only (not synced across devices)</li>
+                <li>AI responses are pre-defined (not real AI)</li>
+                <li>No real-time updates (refresh needed for some changes)</li>
+                <li>Limited data validation</li>
+            </ul>
+        </div>
+
+        <h2>🔧 Browser Developer Tools</h2>
+        <p>Use these tools for testing:</p>
+        <ul>
+            <li><strong>Console (F12):</strong> Check for JavaScript errors</li>
+            <li><strong>Application tab:</strong> View LocalStorage data</li>
+            <li><strong>Network tab:</strong> Monitor resource loading</li>
+            <li><strong>Responsive mode:</strong> Test different screen sizes</li>
+            <li><strong>Lighthouse:</strong> Performance and accessibility audit</li>
+        </ul>
+
+        <h2>📞 Support</h2>
+        <p>For issues or questions:</p>
+        <ul>
+            <li>Check browser console for errors</li>
+            <li>Clear LocalStorage if data seems corrupted</li>
+            <li>Try different browser or incognito mode</li>
+            <li>Review code comments in source files</li>
+        </ul>
+
+        <div style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid #e2e8f0; text-align: center; color: #64748b;">
+            <p><strong>FitTrack CUET</strong> - Internet Programming Project</p>
+            <p>Chittagong University of Engineering and Technology</p>
+            <p style="margin-top: 1rem;">
+                <a href="index.html" style="color: #4f46e5;">← Back to Login</a> | 
+                <a href="dashboard.html" style="color: #4f46e5;">Go to Dashboard →</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
