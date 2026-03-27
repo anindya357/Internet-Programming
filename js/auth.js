@@ -19,11 +19,12 @@ document.addEventListener('DOMContentLoaded', function() {
     setupPasswordToggles();
 });
 
-function handleLogin(e) {
+async function handleLogin(e) {
     e.preventDefault();
     
     const studentId = document.getElementById('studentId').value;
     const password = document.getElementById('password').value;
+    const submitBtn = e.target.querySelector('button[type="submit"]');
     
     // Basic validation
     if (!studentId || !password) {
@@ -31,26 +32,28 @@ function handleLogin(e) {
         return;
     }
     
-    // Simulate login (In real app, this would call backend API)
-    const userData = {
-        studentId: studentId,
-        name: 'Student',
-        email: studentId + '@cuet.ac.bd'
-    };
+    // Disable button and show loading
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
     
-    // Store user data
-    localStorage.setItem('userData', JSON.stringify(userData));
-    localStorage.setItem('isLoggedIn', 'true');
-    
-    showNotification('Login successful! Redirecting...', 'success');
-    
-    // Redirect to dashboard
-    setTimeout(() => {
-        window.location.href = 'dashboard.html';
-    }, 1500);
+    try {
+        // Call backend API
+        await api.login(studentId, password);
+        
+        showNotification('Login successful! Redirecting...', 'success');
+        
+        // Redirect to dashboard
+        setTimeout(() => {
+            window.location.href = 'dashboard.html';
+        }, 1500);
+    } catch (error) {
+        showNotification(error.message || 'Login failed. Please try again.', 'error');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Login <i class="fas fa-arrow-right"></i>';
+    }
 }
 
-function handleRegister(e) {
+async function handleRegister(e) {
     e.preventDefault();
     
     const firstName = document.getElementById('firstName').value;
@@ -58,13 +61,15 @@ function handleRegister(e) {
     const studentId = document.getElementById('regStudentId').value;
     const email = document.getElementById('email').value;
     const department = document.getElementById('department').value;
-    const year = document.getElementById('year').value;
+    const level = document.getElementById('level').value;
+    const term = document.getElementById('term').value;
     const password = document.getElementById('regPassword').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
     const termsAccepted = document.querySelector('input[name="terms"]').checked;
+    const submitBtn = e.target.querySelector('button[type="submit"]');
     
     // Validation
-    if (!firstName || !lastName || !studentId || !email || !department || !year || !password || !confirmPassword) {
+    if (!firstName || !lastName || !studentId || !email || !department || !level || !term || !password || !confirmPassword) {
         showNotification('Please fill in all fields', 'error');
         return;
     }
@@ -80,36 +85,41 @@ function handleRegister(e) {
     }
     
     // Password strength check
-    if (password.length < 8) {
-        showNotification('Password must be at least 8 characters long', 'error');
+    if (password.length < 6) {
+        showNotification('Password must be at least 6 characters long', 'error');
         return;
     }
     
-    if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password)) {
-        showNotification('Password must contain uppercase, lowercase, and numbers', 'error');
-        return;
+    // Disable button and show loading
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
+    
+    try {
+        // Prepare user data for API
+        const userData = {
+            email: email,
+            full_name: `${firstName} ${lastName}`,
+            student_id: studentId,
+            department: department,
+            level: level,
+            term: term,
+            password: password
+        };
+        
+        // Call backend API
+        await api.register(userData);
+        
+        showNotification('Registration successful! Redirecting to dashboard...', 'success');
+        
+        // Redirect to dashboard (user is now logged in)
+        setTimeout(() => {
+            window.location.href = 'dashboard.html';
+        }, 1500);
+    } catch (error) {
+        showNotification(error.message || 'Registration failed. Please try again.', 'error');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Create Account <i class="fas fa-user-plus"></i>';
     }
-    
-    // Simulate registration (In real app, this would call backend API)
-    const userData = {
-        firstName: firstName,
-        lastName: lastName,
-        name: firstName + ' ' + lastName,
-        studentId: studentId,
-        email: email,
-        department: department,
-        year: year
-    };
-    
-    // Store user data
-    localStorage.setItem('userData', JSON.stringify(userData));
-    
-    showNotification('Registration successful! Please login.', 'success');
-    
-    // Redirect to login
-    setTimeout(() => {
-        window.location.href = 'index.html';
-    }, 2000);
 }
 
 function setupPasswordToggles() {

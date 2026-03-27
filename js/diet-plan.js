@@ -2,7 +2,10 @@
 // Diet Plan Functions
 // ===========================
 
-// Sample meal data
+// Diet plan data loaded from API
+let currentDietPlan = null;
+
+// Sample meal data (fallback/default)
 const sampleMeals = {
     breakfast: {
         name: 'Breakfast',
@@ -82,13 +85,60 @@ const sampleMeals = {
 };
 
 document.addEventListener('DOMContentLoaded', function() {
-    loadDietPreferences();
-    loadMealPlan();
+    // Check authentication
+    if (!isLoggedIn()) {
+        window.location.href = 'index.html';
+        return;
+    }
+    
+    loadDietPlanFromAPI();
     setupPreferencesForm();
     setupWeekTabs();
 });
 
+async function loadDietPlanFromAPI() {
+    try {
+        currentDietPlan = await api.getDietPlan();
+        loadDietPreferences();
+        loadMealPlan();
+    } catch (error) {
+        // Diet plan might not exist yet, use defaults
+        console.log('No diet plan found, using defaults');
+        loadDietPreferences();
+        loadMealPlan();
+    }
+}
+
 function loadDietPreferences() {
+    // Try to load from API data first, then localStorage fallback
+    if (currentDietPlan) {
+        if (currentDietPlan.diet_type) {
+            const dietTypeEl = document.getElementById('dietType');
+            if (dietTypeEl) dietTypeEl.value = currentDietPlan.diet_type;
+        }
+        if (currentDietPlan.meal_frequency) {
+            const mealsEl = document.getElementById('mealsPerDay');
+            if (mealsEl) mealsEl.value = currentDietPlan.meal_frequency;
+        }
+        if (currentDietPlan.target_calories) {
+            const caloriesEl = document.getElementById('targetCalories');
+            if (caloriesEl) caloriesEl.value = currentDietPlan.target_calories;
+        }
+        if (currentDietPlan.preferences) {
+            const foodDislikesEl = document.getElementById('foodDislikes');
+            if (foodDislikesEl) foodDislikesEl.value = currentDietPlan.preferences.food_dislikes || '';
+            
+            if (currentDietPlan.preferences.restrictions) {
+                currentDietPlan.preferences.restrictions.forEach(restriction => {
+                    const checkbox = document.querySelector(`input[name="restrictions"][value="${restriction}"]`);
+                    if (checkbox) checkbox.checked = true;
+                });
+            }
+        }
+        return;
+    }
+    
+    // Fallback to localStorage
     const savedPrefs = localStorage.getItem('dietPreferences');
     
     if (savedPrefs) {
@@ -166,24 +216,56 @@ function setupPreferencesForm() {
     const form = document.getElementById('dietPreferencesForm');
     
     if (form) {
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn?.innerHTML || 'Save';
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            }
+            
             const formData = {
-                dietType: document.getElementById('dietType').value,
-                mealsPerDay: document.getElementById('mealsPerDay').value,
-                targetCalories: document.getElementById('targetCalories').value,
-                restrictions: Array.from(document.querySelectorAll('input[name="restrictions"]:checked')).map(cb => cb.value),
-                foodDislikes: document.getElementById('foodDislikes').value,
-                lastUpdated: new Date().toISOString()
+                diet_type: document.getElementById('dietType').value,
+                meal_frequency: parseInt(document.getElementById('mealsPerDay').value),
+                target_calories: parseInt(document.getElementById('targetCalories').value),
+                preferences: {
+                    restrictions: Array.from(document.querySelectorAll('input[name="restrictions"]:checked')).map(cb => cb.value),
+                    food_dislikes: document.getElementById('foodDislikes').value
+                }
             };
             
-            localStorage.setItem('dietPreferences', JSON.stringify(formData));
-            
-            showNotification('Diet preferences saved successfully!', 'success');
-            
-            // Reload meal plan with new preferences
-            loadMealPlan();
+            try {
+                // Try to update first, then create if it doesn't exist
+                if (currentDietPlan) {
+                    currentDietPlan = await api.updateDietPlan(formData);
+                } else {
+                    currentDietPlan = await api.createDietPlan(formData);
+                }
+                
+                // Also save to localStorage as backup
+                localStorage.setItem('dietPreferences', JSON.stringify({
+                    dietType: formData.diet_type,
+                    mealsPerDay: formData.meal_frequency,
+                    targetCalories: formData.target_calories,
+                    restrictions: formData.preferences.restrictions,
+                    foodDislikes: formData.preferences.food_dislikes,
+                    lastUpdated: new Date().toISOString()
+                }));
+                
+                showNotification('Diet preferences saved successfully!', 'success');
+                
+                // Reload meal plan with new preferences
+                loadMealPlan();
+            } catch (error) {
+                showNotification(error.message || 'Failed to save diet preferences', 'error');
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
+            }
         });
         
         // Update meal plan when meals per day changes

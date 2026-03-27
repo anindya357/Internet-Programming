@@ -2,53 +2,16 @@
 // Workout History Functions
 // ===========================
 
-// Sample workout data
-let workouts = [
-    {
-        id: 1,
-        date: '2026-01-27',
-        type: 'strength',
-        focusArea: 'chest',
-        duration: 45,
-        intensity: 'high',
-        exercises: [
-            { name: 'Bench Press', sets: 4, reps: 10, weight: 60 },
-            { name: 'Incline Dumbbell Press', sets: 3, reps: 12, weight: 25 },
-            { name: 'Cable Flyes', sets: 3, reps: 15, weight: 20 },
-            { name: 'Tricep Pushdowns', sets: 3, reps: 12, weight: 30 }
-        ],
-        notes: 'Great session! Felt strong today.'
-    },
-    {
-        id: 2,
-        date: '2026-01-25',
-        type: 'cardio',
-        focusArea: 'full-body',
-        duration: 30,
-        intensity: 'medium',
-        exercises: [
-            { name: 'Treadmill Running', sets: 1, reps: 30, weight: 0 }
-        ],
-        notes: 'Good cardio session to start the day.'
-    },
-    {
-        id: 3,
-        date: '2026-01-24',
-        type: 'strength',
-        focusArea: 'legs',
-        duration: 60,
-        intensity: 'high',
-        exercises: [
-            { name: 'Squats', sets: 4, reps: 8, weight: 80 },
-            { name: 'Leg Press', sets: 3, reps: 12, weight: 120 },
-            { name: 'Leg Curls', sets: 3, reps: 12, weight: 40 },
-            { name: 'Calf Raises', sets: 4, reps: 15, weight: 50 }
-        ],
-        notes: 'Tough leg day but very productive.'
-    }
-];
+// Workouts data loaded from API
+let workouts = [];
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Check authentication
+    if (!isLoggedIn()) {
+        window.location.href = 'index.html';
+        return;
+    }
+    
     loadWorkouts();
     setupFilters();
     
@@ -59,67 +22,83 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-function loadWorkouts() {
+async function loadWorkouts(filters = {}) {
     const workoutList = document.getElementById('workoutList');
     
     if (!workoutList) return;
     
-    if (workouts.length === 0) {
+    // Show loading
+    workoutList.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading workouts...</div>';
+    
+    try {
+        const response = await api.getWorkouts(filters);
+        workouts = response.workouts || [];
+        
+        if (workouts.length === 0) {
+            workoutList.innerHTML = `
+                <div style="text-align: center; padding: 3rem; color: #64748b;">
+                    <i class="fas fa-dumbbell" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+                    <p>No workouts logged yet. Start tracking your fitness journey!</p>
+                </div>
+            `;
+            return;
+        }
+        
+        const html = workouts.map(workout => `
+            <div class="workout-item">
+                <div class="workout-header">
+                    <div class="workout-title">
+                        <div class="workout-type-icon">
+                            <i class="fas fa-${workout.workout_type === 'cardio' ? 'running' : 'dumbbell'}"></i>
+                        </div>
+                        <div class="workout-title-text">
+                            <h3>${capitalizeFirst(workout.focus_area || 'General')} ${capitalizeFirst(workout.workout_type || 'Workout')}</h3>
+                            <span class="workout-date">${formatDate(workout.created_at)}</span>
+                        </div>
+                    </div>
+                    <div class="workout-actions">
+                        <button class="btn-icon" onclick="viewWorkout(${workout.id})" title="View Details">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn-icon" onclick="deleteWorkout(${workout.id})" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="workout-meta">
+                    <div class="meta-item">
+                        <i class="fas fa-clock"></i>
+                        <span><strong>${workout.duration || 0}</strong> minutes</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-fire"></i>
+                        <span>Intensity: <strong>${capitalizeFirst(workout.intensity || 'medium')}</strong></span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-list"></i>
+                        <span><strong>${(workout.exercises || []).length}</strong> exercises</span>
+                    </div>
+                </div>
+                
+                <div class="workout-exercises">
+                    ${(workout.exercises || []).map(ex => `
+                        <span class="exercise-tag">${ex.name}</span>
+                    `).join('')}
+                </div>
+            </div>
+        `).join('');
+        
+        workoutList.innerHTML = html;
+    } catch (error) {
+        console.error('Error loading workouts:', error);
         workoutList.innerHTML = `
-            <div style="text-align: center; padding: 3rem; color: #64748b;">
-                <i class="fas fa-dumbbell" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"></i>
-                <p>No workouts logged yet. Start tracking your fitness journey!</p>
+            <div style="text-align: center; padding: 3rem; color: #dc2626;">
+                <i class="fas fa-exclamation-circle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                <p>Failed to load workouts. Please try again.</p>
             </div>
         `;
-        return;
     }
-    
-    const html = workouts.map(workout => `
-        <div class="workout-item">
-            <div class="workout-header">
-                <div class="workout-title">
-                    <div class="workout-type-icon">
-                        <i class="fas fa-${workout.type === 'cardio' ? 'running' : 'dumbbell'}"></i>
-                    </div>
-                    <div class="workout-title-text">
-                        <h3>${capitalizeFirst(workout.focusArea)} ${capitalizeFirst(workout.type)}</h3>
-                        <span class="workout-date">${formatDate(workout.date)}</span>
-                    </div>
-                </div>
-                <div class="workout-actions">
-                    <button class="btn-icon" onclick="viewWorkout(${workout.id})" title="View Details">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="btn-icon" onclick="deleteWorkout(${workout.id})" title="Delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </div>
-            
-            <div class="workout-meta">
-                <div class="meta-item">
-                    <i class="fas fa-clock"></i>
-                    <span><strong>${workout.duration}</strong> minutes</span>
-                </div>
-                <div class="meta-item">
-                    <i class="fas fa-fire"></i>
-                    <span>Intensity: <strong>${capitalizeFirst(workout.intensity)}</strong></span>
-                </div>
-                <div class="meta-item">
-                    <i class="fas fa-list"></i>
-                    <span><strong>${workout.exercises.length}</strong> exercises</span>
-                </div>
-            </div>
-            
-            <div class="workout-exercises">
-                ${workout.exercises.map(ex => `
-                    <span class="exercise-tag">${ex.name}</span>
-                `).join('')}
-            </div>
-        </div>
-    `).join('');
-    
-    workoutList.innerHTML = html;
 }
 
 function setupFilters() {
@@ -172,18 +151,30 @@ function addExerciseField() {
     exerciseList.appendChild(newExercise);
 }
 
-function viewWorkout(id) {
-    const workout = workouts.find(w => w.id === id);
-    if (workout) {
-        alert(`Workout Details:\n\nDate: ${formatDate(workout.date)}\nType: ${workout.type}\nDuration: ${workout.duration} min\nExercises: ${workout.exercises.length}\n\nNotes: ${workout.notes || 'No notes'}`);
+async function viewWorkout(id) {
+    try {
+        const workout = await api.getWorkout(id);
+        if (workout) {
+            const exerciseList = (workout.exercises || [])
+                .map(ex => `- ${ex.name}: ${ex.sets} sets x ${ex.reps} reps${ex.weight ? ` @ ${ex.weight}kg` : ''}`)
+                .join('\n');
+            
+            alert(`Workout Details:\n\nName: ${workout.name || 'Unnamed'}\nDate: ${formatDate(workout.created_at)}\nType: ${workout.workout_type || 'General'}\nDuration: ${workout.duration || 0} min\nIntensity: ${workout.intensity || 'medium'}\n\nExercises:\n${exerciseList || 'No exercises'}\n\nNotes: ${workout.notes || 'No notes'}`);
+        }
+    } catch (error) {
+        showNotification('Failed to load workout details', 'error');
     }
 }
 
-function deleteWorkout(id) {
+async function deleteWorkout(id) {
     if (confirm('Are you sure you want to delete this workout?')) {
-        workouts = workouts.filter(w => w.id !== id);
-        loadWorkouts();
-        showNotification('Workout deleted successfully', 'success');
+        try {
+            await api.deleteWorkout(id);
+            await loadWorkouts();
+            showNotification('Workout deleted successfully', 'success');
+        } catch (error) {
+            showNotification('Failed to delete workout', 'error');
+        }
     }
 }
 
@@ -192,45 +183,56 @@ document.addEventListener('DOMContentLoaded', function() {
     const workoutForm = document.getElementById('workoutForm');
     
     if (workoutForm) {
-        workoutForm.addEventListener('submit', function(e) {
+        workoutForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // Collect form data
-            const formData = {
-                id: Date.now(),
-                date: document.getElementById('workoutDate').value,
-                type: document.getElementById('workoutType').value,
-                focusArea: document.getElementById('focusArea').value,
-                duration: parseInt(document.getElementById('duration').value),
-                intensity: document.querySelector('input[name="intensity"]:checked')?.value,
-                exercises: [],
-                notes: document.getElementById('notes').value
-            };
+            const submitBtn = workoutForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
             
-            // Collect exercises
-            const exerciseItems = document.querySelectorAll('.exercise-item');
-            exerciseItems.forEach(item => {
-                const name = item.querySelector('.exercise-name').value;
-                const sets = parseInt(item.querySelector('.exercise-sets').value);
-                const reps = parseInt(item.querySelector('.exercise-reps').value);
-                const weight = parseInt(item.querySelector('.exercise-weight').value || 0);
+            try {
+                // Collect form data
+                const formData = {
+                    name: document.getElementById('workoutName')?.value || `${document.getElementById('focusArea').value} Workout`,
+                    workout_type: document.getElementById('workoutType').value,
+                    focus_area: document.getElementById('focusArea').value,
+                    duration: parseInt(document.getElementById('duration').value),
+                    intensity: document.querySelector('input[name="intensity"]:checked')?.value || 'medium',
+                    exercises: [],
+                    notes: document.getElementById('notes').value
+                };
                 
-                if (name && sets && reps) {
-                    formData.exercises.push({ name, sets, reps, weight });
-                }
-            });
-            
-            // Add to workouts array
-            workouts.unshift(formData);
-            
-            // Reload workouts
-            loadWorkouts();
-            
-            // Close modal and reset form
-            closeWorkoutModal();
-            workoutForm.reset();
-            
-            showNotification('Workout logged successfully!', 'success');
+                // Collect exercises
+                const exerciseItems = document.querySelectorAll('.exercise-item');
+                exerciseItems.forEach((item, idx) => {
+                    const name = item.querySelector('.exercise-name').value;
+                    const sets = parseInt(item.querySelector('.exercise-sets').value);
+                    const reps = parseInt(item.querySelector('.exercise-reps').value);
+                    const weight = parseFloat(item.querySelector('.exercise-weight').value || 0);
+                    
+                    if (name && sets && reps) {
+                        formData.exercises.push({ name, sets, reps, weight, order: idx });
+                    }
+                });
+                
+                // Call API
+                await api.createWorkout(formData);
+                
+                // Reload workouts
+                await loadWorkouts();
+                
+                // Close modal and reset form
+                closeWorkoutModal();
+                workoutForm.reset();
+                
+                showNotification('Workout logged successfully!', 'success');
+            } catch (error) {
+                showNotification(error.message || 'Failed to save workout', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
         });
     }
 });

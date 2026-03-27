@@ -120,7 +120,7 @@ const equipmentData = [
     },
     {
         id: 3,
-        name: "Rowing Machine",
+        name: "Pull-Up Machine",
         category: "cardio",
         icon: "fa-water",
         status: "available",
@@ -852,12 +852,14 @@ const equipmentData = [
 let currentView = 'grid';
 let currentFilter = 'all';
 let currentSearchTerm = '';
+let apiEquipmentData = null; // Equipment loaded from API
 
 // Initialize page
 document.addEventListener('DOMContentLoaded', function() {
     // Check authentication
-    if (typeof checkAuth === 'function') {
-        checkAuth();
+    if (!isLoggedIn()) {
+        window.location.href = 'index.html';
+        return;
     }
     
     // Setup navigation
@@ -878,16 +880,77 @@ document.addEventListener('DOMContentLoaded', function() {
     setupSearch();
     setupViewToggle();
     setupModal();
-    loadEquipment();
+    loadEquipmentFromAPI();
 });
+
+// Load equipment from API first, then fallback to static data
+async function loadEquipmentFromAPI() {
+    const catalog = document.getElementById('equipmentCatalog');
+    if (catalog) {
+        catalog.innerHTML = '<div class="loading-equipment"><i class="fas fa-spinner fa-spin"></i> Loading equipment...</div>';
+    }
+    
+    try {
+        const response = await api.getEquipment({ limit: 100 });
+        if (response.equipment && response.equipment.length > 0) {
+            // Merge API data with static data for detailed info
+            apiEquipmentData = response.equipment.map(apiEq => {
+                const staticEq = equipmentData.find(eq => 
+                    eq.name.toLowerCase() === apiEq.name.toLowerCase()
+                );
+                if (staticEq) {
+                    return { ...staticEq, ...apiEq, status: apiEq.is_available ? 'available' : 'in-use' };
+                }
+                // If no matching static data, create basic structure
+                return {
+                    id: apiEq.id,
+                    name: apiEq.name,
+                    category: apiEq.category || 'general',
+                    icon: getEquipmentIcon(apiEq.category),
+                    status: apiEq.is_available ? 'available' : 'in-use',
+                    description: apiEq.description || 'No description available.',
+                    muscles: (apiEq.muscle_groups || []).join(', ') || 'Various',
+                    difficulty: apiEq.difficulty_level || 'Beginner to Advanced',
+                    capacity: '1 person',
+                    sessionTime: '15-30 minutes',
+                    guidelines: apiEq.instructions || [],
+                    proTips: [],
+                    benefits: [],
+                    safety: apiEq.safety_tips || [],
+                    dos: [],
+                    donts: []
+                };
+            });
+        }
+    } catch (error) {
+        console.log('Using static equipment data:', error.message);
+    }
+    
+    loadEquipment();
+}
+
+function getEquipmentIcon(category) {
+    const icons = {
+        'cardio': 'fa-person-running',
+        'strength': 'fa-dumbbell',
+        'free-weights': 'fa-weight',
+        'machines': 'fa-cogs',
+        'flexibility': 'fa-child',
+        'accessories': 'fa-box'
+    };
+    return icons[(category || '').toLowerCase()] || 'fa-dumbbell';
+}
 
 // Load and display equipment
 function loadEquipment() {
     const catalog = document.getElementById('equipmentCatalog');
     if (!catalog) return;
     
+    // Use API data if available, otherwise static data
+    const dataSource = apiEquipmentData || equipmentData;
+    
     // Filter equipment
-    let filteredEquipment = equipmentData;
+    let filteredEquipment = dataSource;
     
     // Apply category filter
     if (currentFilter !== 'all') {

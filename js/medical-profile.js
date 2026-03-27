@@ -2,23 +2,85 @@
 // Medical Profile Functions
 // ===========================
 
+// Medical profile data from API
+let currentMedicalProfile = null;
+
 document.addEventListener('DOMContentLoaded', function() {
+    // Check authentication
+    if (!isLoggedIn()) {
+        window.location.href = 'index.html';
+        return;
+    }
+    
     loadMedicalProfile();
     setupBMICalculator();
     setupAllergyToggle();
     setupFormSubmission();
 });
 
-function loadMedicalProfile() {
-    const savedProfile = localStorage.getItem('medicalProfile');
-    
-    if (savedProfile) {
-        const profile = JSON.parse(savedProfile);
-        populateForm(profile);
+async function loadMedicalProfile() {
+    try {
+        currentMedicalProfile = await api.getMedicalProfile();
+        populateForm(currentMedicalProfile);
+    } catch (error) {
+        // Profile might not exist yet, try localStorage fallback
+        const savedProfile = localStorage.getItem('medicalProfile');
+        if (savedProfile) {
+            const profile = JSON.parse(savedProfile);
+            populateFormFromLocal(profile);
+        }
     }
 }
 
 function populateForm(profile) {
+    // Basic info (from API response)
+    if (profile.age) document.getElementById('age').value = profile.age;
+    if (profile.gender) document.getElementById('gender').value = profile.gender;
+    if (profile.height) document.getElementById('height').value = profile.height;
+    if (profile.weight) document.getElementById('weight').value = profile.weight;
+    if (profile.blood_group) document.getElementById('bloodGroup').value = profile.blood_group;
+    
+    // Medical history
+    if (profile.medical_conditions && profile.medical_conditions.length > 0) {
+        profile.medical_conditions.forEach(condition => {
+            const checkbox = document.querySelector(`input[name="conditions"][value="${condition}"]`);
+            if (checkbox) checkbox.checked = true;
+        });
+    }
+    
+    if (profile.conditions_details) document.getElementById('conditionsDetails').value = profile.conditions_details;
+    if (profile.past_injuries) document.getElementById('pastInjuries').value = profile.past_injuries;
+    if (profile.current_medications) document.getElementById('currentMedications').value = profile.current_medications;
+    
+    // Allergies
+    if (profile.allergies && profile.allergies.length > 0) {
+        document.querySelector('input[name="hasAllergies"][value="yes"]').checked = true;
+        document.getElementById('allergyDetailsGroup').style.display = 'block';
+        document.getElementById('allergyDetails').value = profile.allergies.join(', ');
+    } else {
+        document.querySelector('input[name="hasAllergies"][value="no"]').checked = true;
+    }
+    
+    // Fitness goals
+    if (profile.fitness_goal) document.getElementById('fitnessGoal').value = profile.fitness_goal;
+    if (profile.physical_limitations) document.getElementById('physicalLimitations').value = profile.physical_limitations;
+    if (profile.activity_level) document.getElementById('fitnessLevel').value = profile.activity_level;
+    
+    // Emergency contact
+    if (profile.emergency_contact) {
+        if (profile.emergency_contact.name) document.getElementById('emergencyName').value = profile.emergency_contact.name;
+        if (profile.emergency_contact.relation) document.getElementById('emergencyRelation').value = profile.emergency_contact.relation;
+        if (profile.emergency_contact.phone) document.getElementById('emergencyPhone').value = profile.emergency_contact.phone;
+    }
+    
+    // Trigger BMI calculation
+    const heightInput = document.getElementById('height');
+    if (heightInput) {
+        heightInput.dispatchEvent(new Event('input'));
+    }
+}
+
+function populateFormFromLocal(profile) {
     // Basic info
     if (profile.age) document.getElementById('age').value = profile.age;
     if (profile.gender) document.getElementById('gender').value = profile.gender;
@@ -108,41 +170,84 @@ function setupFormSubmission() {
     const form = document.getElementById('medicalProfileForm');
     
     if (form) {
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // Collect form data
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn?.innerHTML || 'Save';
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            }
+            
+            // Collect form data for API
+            const allergiesText = document.getElementById('allergyDetails').value;
+            const hasAllergies = document.querySelector('input[name="hasAllergies"]:checked')?.value === 'yes';
+            
             const formData = {
-                age: document.getElementById('age').value,
+                age: parseInt(document.getElementById('age').value) || null,
                 gender: document.getElementById('gender').value,
-                height: document.getElementById('height').value,
-                weight: document.getElementById('weight').value,
-                bmi: document.getElementById('bmi').value,
-                bloodGroup: document.getElementById('bloodGroup').value,
-                conditions: Array.from(document.querySelectorAll('input[name="conditions"]:checked')).map(cb => cb.value),
-                conditionsDetails: document.getElementById('conditionsDetails').value,
-                pastInjuries: document.getElementById('pastInjuries').value,
-                currentMedications: document.getElementById('currentMedications').value,
-                hasAllergies: document.querySelector('input[name="hasAllergies"]:checked')?.value,
-                allergyDetails: document.getElementById('allergyDetails').value,
-                fitnessGoal: document.getElementById('fitnessGoal').value,
-                physicalLimitations: document.getElementById('physicalLimitations').value,
-                fitnessLevel: document.getElementById('fitnessLevel').value,
-                emergencyName: document.getElementById('emergencyName').value,
-                emergencyRelation: document.getElementById('emergencyRelation').value,
-                emergencyPhone: document.getElementById('emergencyPhone').value,
-                lastUpdated: new Date().toISOString()
+                height: parseFloat(document.getElementById('height').value) || null,
+                weight: parseFloat(document.getElementById('weight').value) || null,
+                blood_group: document.getElementById('bloodGroup').value,
+                medical_conditions: Array.from(document.querySelectorAll('input[name="conditions"]:checked')).map(cb => cb.value),
+                conditions_details: document.getElementById('conditionsDetails').value,
+                past_injuries: document.getElementById('pastInjuries').value,
+                current_medications: document.getElementById('currentMedications').value,
+                allergies: hasAllergies && allergiesText ? allergiesText.split(',').map(a => a.trim()) : [],
+                fitness_goal: document.getElementById('fitnessGoal').value,
+                physical_limitations: document.getElementById('physicalLimitations').value,
+                activity_level: document.getElementById('fitnessLevel').value,
+                emergency_contact: {
+                    name: document.getElementById('emergencyName').value,
+                    relation: document.getElementById('emergencyRelation').value,
+                    phone: document.getElementById('emergencyPhone').value
+                }
             };
             
-            // Save to localStorage
-            localStorage.setItem('medicalProfile', JSON.stringify(formData));
-            
-            showNotification('Medical profile saved successfully!', 'success');
-            
-            // Optionally redirect
-            setTimeout(() => {
-                window.location.href = 'dashboard.html';
-            }, 1500);
+            try {
+                // Try to update first, then create if it doesn't exist
+                if (currentMedicalProfile) {
+                    currentMedicalProfile = await api.updateMedicalProfile(formData);
+                } else {
+                    currentMedicalProfile = await api.createMedicalProfile(formData);
+                }
+                
+                // Also save to localStorage as backup
+                localStorage.setItem('medicalProfile', JSON.stringify({
+                    age: formData.age,
+                    gender: formData.gender,
+                    height: formData.height,
+                    weight: formData.weight,
+                    bloodGroup: formData.blood_group,
+                    conditions: formData.medical_conditions,
+                    conditionsDetails: formData.conditions_details,
+                    pastInjuries: formData.past_injuries,
+                    currentMedications: formData.current_medications,
+                    hasAllergies: hasAllergies ? 'yes' : 'no',
+                    allergyDetails: allergiesText,
+                    fitnessGoal: formData.fitness_goal,
+                    physicalLimitations: formData.physical_limitations,
+                    fitnessLevel: formData.activity_level,
+                    emergencyName: formData.emergency_contact.name,
+                    emergencyRelation: formData.emergency_contact.relation,
+                    emergencyPhone: formData.emergency_contact.phone,
+                    lastUpdated: new Date().toISOString()
+                }));
+                
+                showNotification('Medical profile saved successfully!', 'success');
+                
+                // Optionally redirect
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1500);
+            } catch (error) {
+                showNotification(error.message || 'Failed to save medical profile', 'error');
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
+            }
         });
     }
 }

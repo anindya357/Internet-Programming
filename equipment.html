@@ -7,43 +7,103 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/pages.css">
     <link rel="stylesheet" href="css/additional.css">
+    <link rel="stylesheet" href="css/responsive.css">
     <link rel="stylesheet" href="css/gym-theme.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-brand">
-                <i class="fas fa-dumbbell"></i>
-                <span>FitTrack CUET</span>
-            </div>
-            <button class="nav-toggle" id="navToggle">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            <ul class="nav-menu" id="navMenu">
-                <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
-                <li><a href="equipment.html" class="active"><i class="fas fa-dumbbell"></i> Equipment</a></li>
-                <li><a href="workout-history.html"><i class="fas fa-history"></i> Workouts</a></li>
-                <li><a href="ai-instructor.html"><i class="fas fa-robot"></i> AI Instructor</a></li>
-                <li><a href="diet-plan.html"><i class="fas fa-utensils"></i> Diet Plan</a></li>
-                <li class="nav-dropdown">
-                    <a href="#" class="nav-dropdown-toggle">
-                        <i class="fas fa-user-circle"></i>
-                        <span id="navUserName">Profile</span>
+    <!-- Skip Navigation for Accessibility -->
+    <a href="#main-content" class="sr-only">Skip to main content</a>
+
+    <!-- Site Header -->
+    <header class="site-header" role="banner">
+        <nav class="navbar" role="navigation" aria-label="Main navigation">
+            <div class="nav-container container">
+                <!-- Brand Logo -->
+                <a href="dashboard.html" class="nav-brand" aria-label="FitTrack CUET Home">
+                    <i class="fas fa-dumbbell" aria-hidden="true"></i>
+                    <span>FitTrack CUET</span>
+                </a>
+                
+                <!-- Mobile Menu Toggle -->
+                <button 
+                    class="nav-toggle" 
+                    id="navToggle" 
+                    type="button"
+                    aria-expanded="false" 
+                    aria-controls="navMenu"
+                    aria-label="Toggle navigation menu"
+                >
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                
+                <!-- Main Navigation Menu -->
+                <ul class="nav-menu" id="navMenu" role="menubar">
+                    <li role="none">
+                        <a href="dashboard.html" role="menuitem">
+                            <i class="fas fa-home" aria-hidden="true"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li role="none">
+                        <a href="equipment.html" class="active" role="menuitem" aria-current="page">
+                            <i class="fas fa-dumbbell" aria-hidden="true"></i>
+                            <span>Equipment</span>
+                        </a>
+                    </li>
+                    <li role="none">
+                        <a href="workout-history.html" role="menuitem">
+                            <i class="fas fa-history" aria-hidden="true"></i>
+                            <span>Workout History</span>
+                        </a>
+                    </li>
+                    <li role="none">
+                        <a href="ai-instructor.html" role="menuitem">
+                            <i class="fas fa-robot" aria-hidden="true"></i>
+                            <span>AI Instructor</span>
+                        </a>
+                    </li>
+                    <li role="none">
+                        <a href="diet-plan.html" role="menuitem">
+                            <i class="fas fa-utensils" aria-hidden="true"></i>
+                            <span>Diet Plan</span>
+                        </a>
+                    </li>
+                    <li role="none">
+                        <a href="medical-profile.html" role="menuitem">
+                            <i class="fas fa-user-md" aria-hidden="true"></i>
+                            <span>Medical Profile</span>
+                        </a>
+                    </li>
+                    <li role="none">
+                        <a href="rules-safety.html" role="menuitem">
+                            <i class="fas fa-shield-alt" aria-hidden="true"></i>
+                            <span>Rules & Safety</span>
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="nav-user">
+                    <div class="notification-icon">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <div class="user-dropdown">
+                        <img src="https://ui-avatars.com/api/?name=Student&background=4f46e5&color=fff" alt="User">
+                        <span class="user-name">Student</span>
                         <i class="fas fa-chevron-down"></i>
-                    </a>
-                    <ul class="nav-dropdown-menu">
-                        <li><a href="medical-profile.html"><i class="fas fa-heartbeat"></i> Medical Profile</a></li>
-                        <li><a href="rules-safety.html"><i class="fas fa-shield-alt"></i> Rules & Safety</a></li>
-                        <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-    </nav>
+                        <div class="dropdown-menu">
+                            <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+                            <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+                            <a href="index.html" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
 
     <!-- Main Content -->
     <main class="main-content">
@@ -283,7 +343,9 @@
         </div>
     </footer>
 
+    <script src="js/api.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/notifications.js" defer></script>
     <script src="js/equipment.js"></script>
 </body>
 </html>

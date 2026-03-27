@@ -101,57 +101,20 @@
                     </li>
                 </ul>
                 
-                <!-- User Actions -->
                 <div class="nav-user">
-                    <!-- Notifications -->
-                    <button 
-                        class="notification-icon" 
-                        type="button"
-                        aria-label="Notifications (3 unread)"
-                    >
-                        <i class="fas fa-bell" aria-hidden="true"></i>
-                        <span class="notification-badge" aria-hidden="true">3</span>
-                    </button>
-                    
-                    <!-- User Dropdown -->
+                    <div class="notification-icon">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
                     <div class="user-dropdown">
-                        <button 
-                            type="button" 
-                            class="user-dropdown-toggle"
-                            aria-expanded="false"
-                            aria-haspopup="true"
-                            aria-label="User menu"
-                        >
-                            <img 
-                                src="https://ui-avatars.com/api/?name=Student&background=4f46e5&color=fff" 
-                                alt="Student profile picture"
-                                width="32"
-                                height="32"
-                                loading="lazy"
-                            >
-                            <span class="user-name">Student</span>
-                            <i class="fas fa-chevron-down" aria-hidden="true"></i>
-                        </button>
-                        <ul class="dropdown-menu" role="menu">
-                            <li role="none">
-                                <a href="#" role="menuitem">
-                                    <i class="fas fa-user" aria-hidden="true"></i>
-                                    Profile
-                                </a>
-                            </li>
-                            <li role="none">
-                                <a href="#" role="menuitem">
-                                    <i class="fas fa-cog" aria-hidden="true"></i>
-                                    Settings
-                                </a>
-                            </li>
-                            <li role="none">
-                                <a href="index.html" role="menuitem" id="logoutBtn">
-                                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
-                                    Logout
-                                </a>
-                            </li>
-                        </ul>
+                        <img src="https://ui-avatars.com/api/?name=Student&background=4f46e5&color=fff" alt="User">
+                        <span class="user-name">Student</span>
+                        <i class="fas fa-chevron-down"></i>
+                        <div class="dropdown-menu">
+                            <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+                            <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+                            <a href="index.html" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -203,7 +166,7 @@
                                 <i class="fas fa-clock" aria-hidden="true"></i>
                                 <strong>Operating Hours</strong>
                             </dt>
-                            <dd>6:00 AM - 10:00 PM (Mon-Sat)</dd>
+                            <dd>6:00 PM - 10:00 PM (Every Day)</dd>
                         </div>
                         <div class="status-item">
                             <dt>
@@ -390,7 +353,9 @@
     </footer>
 
     <!-- Scripts -->
+    <script src="js/api.js"></script>
     <script src="js/main.js" defer></script>
+    <script src="js/notifications.js" defer></script>
     <script src="js/dashboard.js" defer></script>
 </body>
 </html>

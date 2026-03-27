@@ -2,26 +2,53 @@
 // AI Instructor Functions
 // ===========================
 
-// Sample AI responses (In production, this would connect to actual AI API)
-const aiResponses = {
+// Fallback AI responses (used when API is unavailable)
+const fallbackResponses = {
     workout_plan: "Here's a personalized workout plan for chest and triceps:\n\n**Warm-up (5-10 minutes):**\n- Light cardio (treadmill/bike)\n- Dynamic stretches\n\n**Main Workout:**\n1. Barbell Bench Press - 4 sets x 8-10 reps\n2. Incline Dumbbell Press - 3 sets x 10-12 reps\n3. Cable Flyes - 3 sets x 12-15 reps\n4. Tricep Dips - 3 sets x 10-12 reps\n5. Tricep Pushdowns - 3 sets x 12-15 reps\n6. Overhead Tricep Extension - 3 sets x 12 reps\n\n**Cool-down:**\n- Light stretching for chest and arms\n\nRemember to rest 60-90 seconds between sets!",
     
-    equipment_guide: "The bench press is one of the most effective exercises for building chest strength. Here's how to use it properly:\n\n**Setup:**\n1. Lie flat on the bench with feet firmly on the floor\n2. Position yourself so the bar is above your eyes\n3. Grip the bar slightly wider than shoulder-width\n\n**Execution:**\n1. Unrack the bar and hold it directly above your chest\n2. Lower the bar slowly to mid-chest (touch lightly)\n3. Press the bar back up explosively\n4. Keep your shoulder blades retracted throughout\n\n**Safety Tips:**\n- Always use a spotter for heavy weights\n- Keep your wrists straight\n- Don't bounce the bar off your chest\n- Breathe out when pressing up\n\nStart with lighter weights to master the form!",
-    
-    injury_prevention: "For lower back pain prevention during workouts:\n\n**Key Exercises:**\n1. **Cat-Cow Stretches** - Great for spine mobility\n2. **Bird Dogs** - Strengthens core and lower back\n3. **Dead Bugs** - Builds core stability\n4. **Planks** - Overall core strengthening\n5. **Glute Bridges** - Strengthens posterior chain\n\n**General Tips:**\n- Always engage your core during exercises\n- Avoid excessive spinal flexion/extension\n- Start with bodyweight before adding resistance\n- Focus on proper form over heavy weights\n- Strengthen your core and glutes\n- Stretch hip flexors regularly\n\n**When to Avoid:**\nIf you experience sharp pain, stop immediately and consult a healthcare professional. Some exercises to be cautious with:\n- Heavy deadlifts without proper form\n- Sit-ups with poor technique\n- Hyperextensions without control\n\nWould you like specific modifications for any exercises?",
-    
-    warmup: "Here's an effective warm-up routine (8-10 minutes):\n\n**Cardio (3-4 minutes):**\n- Light jogging on treadmill or\n- Cycling at moderate pace or\n- Jumping jacks\n\n**Dynamic Stretches:**\n1. **Arm Circles** - 10 forward, 10 backward\n2. **Leg Swings** - 10 each leg (forward/back, side to side)\n3. **Hip Circles** - 10 each direction\n4. **Torso Twists** - 15-20 reps\n5. **Walking Lunges** - 10 each leg\n6. **Inchworms** - 5-8 reps\n7. **High Knees** - 30 seconds\n8. **Butt Kicks** - 30 seconds\n\n**Sport-Specific:**\nAdd light sets of your first exercise (50% weight, 8-10 reps) before going heavy.\n\nRemember: Never skip warm-up! It reduces injury risk and improves performance.",
-    
-    progressive_overload: "Progressive overload is key to continuous gains! Here are proven strategies:\n\n**1. Increase Weight**\n- Add 2.5-5kg when you can complete all sets/reps\n- Use microplates for smaller increments\n- Track your lifts consistently\n\n**2. Increase Volume**\n- Add extra sets (3 → 4 sets)\n- Add extra reps (8 → 10 reps)\n- Add more exercises for muscle group\n\n**3. Increase Frequency**\n- Train muscle group 2-3x per week\n- Allow proper recovery between sessions\n\n**4. Improve Form & Tempo**\n- Slow down eccentric phase (3-4 seconds)\n- Control the movement throughout\n- Achieve full range of motion\n\n**5. Reduce Rest Time**\n- Gradually decrease rest periods (90s → 60s)\n- Maintain intensity and form\n\n**6. Increase Training Density**\n- Complete same work in less time\n- Add supersets or circuits\n\n**Important Rules:**\n- Progress gradually (5-10% increase)\n- Listen to your body\n- Prioritize recovery\n- Track everything in a log\n- Deload every 4-6 weeks\n\nWhich method would you like to implement first?"
+    default: "I'm here to help with your fitness journey! I can assist you with:\n\n• Creating workout plans\n• Explaining proper exercise form\n• Equipment usage guidance\n• Injury prevention tips\n• Warm-up and cool-down routines\n• Progressive overload strategies\n• Workout programming\n\nWhat specific fitness topic would you like to discuss?"
 };
 
 let chatHistory = [];
+let currentContext = 'general';
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Check authentication
+    if (!isLoggedIn()) {
+        window.location.href = 'index.html';
+        return;
+    }
+    
     setupChatForm();
     setupQuickPrompts();
+    setupContextSelector();
     adjustTextareaHeight();
+    loadChatHistory();
 });
+
+async function loadChatHistory() {
+    try {
+        const response = await api.getAIChatHistory({ limit: 20 });
+        if (response.messages && response.messages.length > 0) {
+            // Display recent messages
+            response.messages.reverse().forEach(msg => {
+                addMessageToChat(msg.user_message, 'user', new Date(msg.created_at), false);
+                addMessageToChat(msg.ai_response, 'ai', new Date(msg.created_at), false);
+            });
+        }
+    } catch (error) {
+        console.log('Could not load chat history:', error.message);
+    }
+}
+
+function setupContextSelector() {
+    const contextSelect = document.getElementById('chatContext');
+    if (contextSelect) {
+        contextSelect.addEventListener('change', function() {
+            currentContext = this.value;
+        });
+    }
+}
 
 function setupChatForm() {
     const chatForm = document.getElementById('chatForm');
@@ -62,52 +89,67 @@ function sendQuickPrompt(message) {
     sendMessage(message);
 }
 
-function sendMessage(message) {
+async function sendMessage(message) {
     // Add user message to chat
     addMessageToChat(message, 'user');
     
     // Show typing indicator
     showTypingIndicator();
     
-    // Simulate AI response delay
-    setTimeout(() => {
+    // Disable input while waiting
+    const chatInput = document.getElementById('chatInput');
+    const submitBtn = document.querySelector('#chatForm button[type="submit"]');
+    if (chatInput) chatInput.disabled = true;
+    if (submitBtn) submitBtn.disabled = true;
+    
+    try {
+        // Call backend AI API
+        const response = await api.chatWithAI(message, currentContext, true);
         hideTypingIndicator();
-        const response = generateAIResponse(message);
-        addMessageToChat(response, 'ai');
-    }, 1500);
-    
-    // Store in history
-    chatHistory.push({
-        role: 'user',
-        message: message,
-        timestamp: new Date()
-    });
-}
-
-function generateAIResponse(message) {
-    const lowerMessage = message.toLowerCase();
-    
-    if (lowerMessage.includes('workout plan') || lowerMessage.includes('exercise plan')) {
-        return aiResponses.workout_plan;
-    } else if (lowerMessage.includes('bench press') || lowerMessage.includes('how to use') || lowerMessage.includes('equipment')) {
-        return aiResponses.equipment_guide;
-    } else if (lowerMessage.includes('injury') || lowerMessage.includes('pain') || lowerMessage.includes('prevent')) {
-        return aiResponses.injury_prevention;
-    } else if (lowerMessage.includes('warm') || lowerMessage.includes('stretch')) {
-        return aiResponses.warmup;
-    } else if (lowerMessage.includes('progressive') || lowerMessage.includes('overload') || lowerMessage.includes('progress')) {
-        return aiResponses.progressive_overload;
-    } else {
-        return "I'm here to help with your fitness journey! I can assist you with:\n\n• Creating workout plans\n• Explaining proper exercise form\n• Equipment usage guidance\n• Injury prevention tips\n• Warm-up and cool-down routines\n• Progressive overload strategies\n• Workout programming\n\nWhat specific fitness topic would you like to discuss?";
+        
+        if (response && response.ai_response) {
+            addMessageToChat(response.ai_response, 'ai');
+        } else {
+            throw new Error('Invalid response from AI');
+        }
+    } catch (error) {
+        hideTypingIndicator();
+        console.error('AI API error:', error);
+        
+        // Fallback to static response
+        const fallbackResponse = generateFallbackResponse(message);
+        addMessageToChat(fallbackResponse, 'ai');
+        
+        // Show notification about fallback
+        if (typeof showNotification === 'function') {
+            showNotification('Using offline mode - AI features limited', 'info');
+        }
+    } finally {
+        // Re-enable input
+        if (chatInput) chatInput.disabled = false;
+        if (submitBtn) submitBtn.disabled = false;
+        if (chatInput) chatInput.focus();
     }
 }
 
-function addMessageToChat(message, sender) {
+function generateFallbackResponse(message) {
+    const lowerMessage = message.toLowerCase();
+    
+    if (lowerMessage.includes('workout plan') || lowerMessage.includes('exercise plan')) {
+        return fallbackResponses.workout_plan;
+    }
+    
+    return fallbackResponses.default;
+}
+
+function addMessageToChat(message, sender, timestamp = null, scrollToBottom = true) {
     const chatMessages = document.getElementById('chatMessages');
+    if (!chatMessages) return;
+    
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${sender}-message`;
     
-    const now = new Date();
+    const now = timestamp || new Date();
     const timeString = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
     
     messageDiv.innerHTML = `
@@ -126,9 +168,12 @@ function addMessageToChat(message, sender) {
     `;
     
     chatMessages.appendChild(messageDiv);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
     
-    // Store in history
+    if (scrollToBottom) {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    // Store in local history
     chatHistory.push({
         role: sender,
         message: message,
