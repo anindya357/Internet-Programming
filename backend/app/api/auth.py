@@ -4,7 +4,7 @@ Authentication API Endpoints
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from app.core.database import get_db
 from app.core.security import (
@@ -160,6 +160,12 @@ async def change_password(
 
 
 @router.post("/logout")
-async def logout(current_user: User = Depends(get_current_user)):
-    """Logout user (client should discard token)"""
+async def logout(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Logout user and update last_active_at timestamp"""
+    current_user.last_active_at = datetime.utcnow()
+    db.commit()
+    
     return {"message": "Logged out successfully"}

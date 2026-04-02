@@ -78,9 +78,9 @@
                         <i class="fas fa-users"></i>
                     </div>
                     <div class="metric-content">
-                        <h3>1,247</h3>
+                        <h3 data-stat="total-users">0</h3>
                         <p>Total Members</p>
-                        <small class="metric-change positive"><i class="fas fa-arrow-up"></i> 12% this month</small>
+                        <small class="metric-change positive"><i class="fas fa-arrow-up"></i> <span data-stat-detail="user-growth">0</span>% this month</small>
                     </div>
                 </div>
 
@@ -89,9 +89,9 @@
                         <i class="fas fa-user-check"></i>
                     </div>
                     <div class="metric-content">
-                        <h3>342</h3>
-                        <p>Active Today</p>
-                        <small class="metric-change positive"><i class="fas fa-arrow-up"></i> 8% vs yesterday</small>
+                        <h3 data-stat="active-users">0</h3>
+                        <p>Active Members</p>
+                        <small class="metric-change positive"><i class="fas fa-arrow-up"></i> <span data-stat-detail="active-growth">0</span>% active</small>
                     </div>
                 </div>
 
@@ -100,9 +100,9 @@
                         <i class="fas fa-dumbbell"></i>
                     </div>
                     <div class="metric-content">
-                        <h3>52</h3>
+                        <h3 data-stat="total-equipment">0</h3>
                         <p>Equipment Items</p>
-                        <small class="metric-change neutral">3 maintenance needed</small>
+                        <small class="metric-change neutral"><span data-stat-detail="available-equipment">0</span> available</small>
                     </div>
                 </div>
 
@@ -111,9 +111,9 @@
                         <i class="fas fa-chart-line"></i>
                     </div>
                     <div class="metric-content">
-                        <h3>8,549</h3>
-                        <p>Workouts This Month</p>
-                        <small class="metric-change positive"><i class="fas fa-arrow-up"></i> 15% growth</small>
+                        <h3 data-stat="total-workouts">0</h3>
+                        <p>Total Workouts</p>
+                        <small class="metric-change positive"><i class="fas fa-arrow-up"></i> <span data-stat-detail="workout-growth">0</span>% this month</small>
                     </div>
                 </div>
             </section>
@@ -136,12 +136,12 @@
                     <div class="control-item">
                         <div class="control-header">
                             <h3>Current Capacity</h3>
-                            <span class="capacity-number">32/50</span>
+                            <span class="capacity-number" id="capacityNumber">0/0</span>
                         </div>
                         <div class="capacity-bar">
-                            <div class="capacity-fill" style="width: 64%"></div>
+                            <div class="capacity-fill" id="capacityFill" style="width: 0%"></div>
                         </div>
-                        <p class="capacity-status">64% capacity</p>
+                        <p class="capacity-status" id="capacityStatus">0% capacity</p>
                     </div>
 
                     <div class="control-item">
@@ -170,42 +170,9 @@
                                 <th>Status</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="activityTableBody">
                             <tr>
-                                <td>10:45 AM</td>
-                                <td>
-                                    <div class="user-cell">
-                                        <img src="https://ui-avatars.com/api/?name=John+Doe&background=4f46e5&color=fff" alt="User">
-                                        <span>John Doe (1801001)</span>
-                                    </div>
-                                </td>
-                                <td>Strength Training</td>
-                                <td>45 min</td>
-                                <td><span class="badge badge-active">Active</span></td>
-                            </tr>
-                            <tr>
-                                <td>10:30 AM</td>
-                                <td>
-                                    <div class="user-cell">
-                                        <img src="https://ui-avatars.com/api/?name=Sarah+Khan&background=059669&color=fff" alt="User">
-                                        <span>Sarah Khan (1801045)</span>
-                                    </div>
-                                </td>
-                                <td>Cardio Session</td>
-                                <td>30 min</td>
-                                <td><span class="badge badge-completed">Completed</span></td>
-                            </tr>
-                            <tr>
-                                <td>10:15 AM</td>
-                                <td>
-                                    <div class="user-cell">
-                                        <img src="https://ui-avatars.com/api/?name=Ahmed+Ali&background=dc2626&color=fff" alt="User">
-                                        <span>Ahmed Ali (1801089)</span>
-                                    </div>
-                                </td>
-                                <td>Full Body Workout</td>
-                                <td>60 min</td>
-                                <td><span class="badge badge-active">Active</span></td>
+                                <td colspan="5" style="text-align: center; padding: 20px;">Loading activity...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -243,54 +210,9 @@
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="equipmentTableBody">
                             <tr>
-                                <td>
-                                    <div class="equipment-cell">
-                                        <i class="fas fa-running"></i>
-                                        <span>Treadmill</span>
-                                    </div>
-                                </td>
-                                <td>Cardio</td>
-                                <td>8</td>
-                                <td><span class="badge badge-available">Available</span></td>
-                                <td>Dec 15, 2025</td>
-                                <td>
-                                    <button class="btn-icon" title="Edit"><i class="fas fa-edit"></i></button>
-                                    <button class="btn-icon" title="Delete"><i class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="equipment-cell">
-                                        <i class="fas fa-weight-hanging"></i>
-                                        <span>Bench Press</span>
-                                    </div>
-                                </td>
-                                <td>Strength</td>
-                                <td>5</td>
-                                <td><span class="badge badge-available">Available</span></td>
-                                <td>Dec 20, 2025</td>
-                                <td>
-                                    <button class="btn-icon" title="Edit"><i class="fas fa-edit"></i></button>
-                                    <button class="btn-icon" title="Delete"><i class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="equipment-cell">
-                                        <i class="fas fa-bicycle"></i>
-                                        <span>Exercise Bike</span>
-                                    </div>
-                                </td>
-                                <td>Cardio</td>
-                                <td>6</td>
-                                <td><span class="badge badge-maintenance">Maintenance</span></td>
-                                <td>Jan 5, 2026</td>
-                                <td>
-                                    <button class="btn-icon" title="Edit"><i class="fas fa-edit"></i></button>
-                                    <button class="btn-icon" title="Delete"><i class="fas fa-trash"></i></button>
-                                </td>
+                                <td colspan="6" style="text-align: center; padding: 20px;">Loading equipment...</td>
                             </tr>
                         </tbody>
                     </table>

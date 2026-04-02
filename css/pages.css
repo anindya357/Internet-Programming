@@ -232,6 +232,10 @@
     box-shadow: var(--shadow-xl);
 }
 
+.modal-content.modal-large {
+    max-width: 900px;
+}
+
 .modal-header {
     display: flex;
     justify-content: space-between;
@@ -1232,7 +1236,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5rem;
+    padding: 4rem;
     border-bottom: 1px solid var(--border-color);
 }
 

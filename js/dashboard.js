@@ -24,6 +24,12 @@ async function loadDashboardData() {
         const userData = getUserData();
         if (userData) {
             updateUserDisplay(userData);
+            
+            // Show admin link if user is admin
+            const adminNavLink = document.getElementById('adminNavLink');
+            if (adminNavLink && userData.is_admin) {
+                adminNavLink.style.display = 'block';
+            }
         }
         
         // Load gym status

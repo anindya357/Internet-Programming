@@ -42,10 +42,10 @@ async function handleLogin(e) {
         
         showNotification('Login successful! Redirecting...', 'success');
         
-        // Redirect to dashboard
+        // Redirect to dashboard with enough time for data to be saved
         setTimeout(() => {
             window.location.href = 'dashboard.html';
-        }, 1500);
+        }, 800);
     } catch (error) {
         showNotification(error.message || 'Login failed. Please try again.', 'error');
         submitBtn.disabled = false;

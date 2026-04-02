@@ -26,6 +26,7 @@ class User(Base):
     
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    last_active_at = Column(DateTime, nullable=True)
     
     # Relationships
     workouts = relationship("Workout", back_populates="user", cascade="all, delete-orphan")

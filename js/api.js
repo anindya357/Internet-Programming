@@ -10,6 +10,7 @@ const API_ENDPOINTS = {
     login: `${API_BASE_URL}/auth/login`,
     register: `${API_BASE_URL}/auth/register`,
     me: `${API_BASE_URL}/auth/me`,
+    logout: `${API_BASE_URL}/auth/logout`,
     changePassword: `${API_BASE_URL}/auth/change-password`,
     
     // Users
@@ -181,7 +182,17 @@ const api = {
     },
     
     async logout() {
-        removeAuthToken();
+        try {
+            // Call backend logout endpoint to update last_active_at
+            await apiRequest(API_ENDPOINTS.logout, {
+                method: 'POST'
+            });
+        } catch (error) {
+            console.error('Error calling logout API:', error);
+        } finally {
+            // Always remove auth token locally, even if API call fails
+            removeAuthToken();
+        }
     },
     
     // Workouts
@@ -289,6 +300,13 @@ const api = {
     
     async getEquipmentCategories() {
         return await apiRequest(API_ENDPOINTS.equipmentCategories);
+    },
+    
+    async createEquipment(equipmentData) {
+        return await apiRequest(API_ENDPOINTS.equipment, {
+            method: 'POST',
+            body: JSON.stringify(equipmentData)
+        });
     },
     
     // AI Instructor
