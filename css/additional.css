@@ -85,7 +85,7 @@
 
 .checkbox-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(22px, 2fr));
     gap: 1.5rem;
     padding: 1.5rem;
     background: var(--bg-light);

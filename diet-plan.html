@@ -79,27 +79,27 @@
             <section class="nutrition-goals">
                 <h2 class="section-title">Your Nutrition Goals</h2>
                 <div class="goals-grid">
-                    <div class="goal-card">
+                    <div class="goal-card" >
                         <i class="fas fa-fire"></i>
-                        <h3>2,400</h3>
+                        <h3 id="displayTargetCalories">0</h3>
                         <p>Daily Calories</p>
                         <small>Based on your goal</small>
                     </div>
                     <div class="goal-card">
                         <i class="fas fa-drumstick-bite"></i>
-                        <h3>150g</h3>
+                        <h3 id="displayProtein">150g</h3>
                         <p>Protein</p>
                         <small>Muscle building</small>
                     </div>
                     <div class="goal-card">
                         <i class="fas fa-bread-slice"></i>
-                        <h3>280g</h3>
+                        <h3 id="displayCarbs">280g</h3>
                         <p>Carbohydrates</p>
                         <small>Energy source</small>
                     </div>
                     <div class="goal-card">
                         <i class="fas fa-cheese"></i>
-                        <h3>65g</h3>
+                        <h3 id="displayFats">65g</h3>
                         <p>Healthy Fats</p>
                         <small>Essential nutrients</small>
                     </div>
@@ -139,6 +139,36 @@
                         </div>
                     </div>
 
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="dietGoal">Goal</label>
+                            <select id="dietGoal" name="dietGoal">
+                                <option value="maintenance">Maintenance</option>
+                                <option value="weight-loss">Weight Loss</option>
+                                <option value="muscle-gain">Muscle Gain</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="proteinTarget">Protein Goal (g)</label>
+                            <input type="number" id="proteinTarget" name="proteinTarget" value="150" min="50" max="400">
+                        </div>
+                        <div class="form-group">
+                            <label for="carbsTarget">Carbs Goal (g)</label>
+                            <input type="number" id="carbsTarget" name="carbsTarget" value="280" min="50" max="600">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fatTarget">Fats Goal (g)</label>
+                            <input type="number" id="fatTarget" name="fatTarget" value="65" min="20" max="200">
+                        </div>
+                        <div class="form-group">
+                            <label for="waterGoal">Water Goal (L)</label>
+                            <input type="number" id="waterGoal" name="waterGoal" value="3.0" step="0.1" min="1.0" max="8.0">
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <label>Dietary Restrictions</label>
                         <div class="checkbox-grid">
@@ -156,6 +186,32 @@
                         <textarea id="foodDislikes" name="foodDislikes" rows="2" placeholder="List foods you dislike or want to avoid..."></textarea>
                     </div>
 
+                    <div class="form-group" style="margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+                        <h3>Manual Daily Meal Plan (Optional)</h3>
+                        <p style="font-size: 0.9rem; color: var(--text-light); margin-bottom: 1rem;">Fill these out to manually set your meals, separated by commas. Leave blank to auto-generate based on targets.</p>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="manualBreakfast">Breakfast Items</label>
+                                <textarea id="manualBreakfast" name="manualBreakfast" rows="2" placeholder="e.g., 3 eggs, 2 slices whole wheat toast"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="manualLunch">Lunch Items</label>
+                                <textarea id="manualLunch" name="manualLunch" rows="2" placeholder="e.g., Grilled chicken (150g), Brown rice (1 cup)"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="manualDinner">Dinner Items</label>
+                                <textarea id="manualDinner" name="manualDinner" rows="2" placeholder="e.g., Grilled salmon, Sweet potato"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="manualSnacks">Snacks Items</label>
+                                <textarea id="manualSnacks" name="manualSnacks" rows="2" placeholder="e.g., Protein shake, Almonds"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-save"></i> Save Preferences
                     </button>
@@ -171,6 +227,7 @@
             </section>
 
             <!-- Weekly Plan Overview -->
+             <!----
             <section class="weekly-overview">
                 <h2 class="section-title">7-Day Meal Plan Overview</h2>
                 <div class="week-tabs">
@@ -183,9 +240,10 @@
                     <button class="tab-btn" data-day="sunday">Sun</button>
                 </div>
                 <div class="day-plan-content" id="dayPlanContent">
-                    <!-- Daily plan will be loaded here -->
+                 
                 </div>
-            </section>
+            </section>     -- >
+             
 
             <!-- Nutrition Tips -->
             <section class="tips-section">
