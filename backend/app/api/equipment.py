@@ -19,6 +19,13 @@ from app.schemas.equipment import (
 router = APIRouter(prefix="/api/equipment", tags=["Equipment"])
 
 
+@router.get("/categories")
+async def get_equipment_categories(db: Session = Depends(get_db)):
+    """Get all equipment categories"""
+    categories = db.query(Equipment.category).distinct().all()
+    return [cat[0] for cat in categories if cat[0]]
+
+
 @router.get("/", response_model=EquipmentListResponse)
 async def get_all_equipment(
     skip: int = 0,
@@ -47,13 +54,6 @@ async def get_all_equipment(
     equipment = query.order_by(Equipment.name).offset(skip).limit(limit).all()
     
     return EquipmentListResponse(total=total, equipment=equipment)
-
-
-@router.get("/categories")
-async def get_equipment_categories(db: Session = Depends(get_db)):
-    """Get all equipment categories"""
-    categories = db.query(Equipment.category).distinct().all()
-    return [cat[0] for cat in categories if cat[0]]
 
 
 @router.get("/{equipment_id}", response_model=EquipmentResponse)

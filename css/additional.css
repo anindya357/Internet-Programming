@@ -2,74 +2,232 @@
    Medical Profile Styles
    =========================== */
 
-.profile-container {
-    max-width: 900px;
+.medical-container {
+    max-width: 1200px;
     margin: 0 auto;
+    padding: 0 1rem;
+    display: block;
 }
 
 .medical-form {
     background: var(--bg-white);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-md);
-    padding: 2rem;
+    padding: 3rem;
+    width: 100%;
 }
 
 .form-section {
-    margin-bottom: 2.5rem;
-    padding-bottom: 2rem;
-    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 3rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 2px solid var(--border-color);
 }
 
 .form-section:last-of-type {
     border-bottom: none;
+    margin-bottom: 1rem;
 }
 
 .form-section h2 {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     font-weight: 700;
     color: var(--text-dark);
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--primary-color);
 }
 
 .form-section h2 i {
     color: var(--primary-color);
+    font-size: 1.8rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    font-weight: 600;
+    font-size: 1.05rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-dark);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 0.9rem;
+    font-size: 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
 .checkbox-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: var(--bg-light);
+    border-radius: var(--radius-md);
 }
 
 .checkbox-grid label {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.75rem;
     cursor: pointer;
-    font-size: 0.95rem;
+    font-size: 1rem;
+    padding: 0.75rem;
+    border-radius: var(--radius-sm);
+    transition: background-color 0.3s ease;
+    font-weight: 500;
+}
+
+.checkbox-grid label:hover {
+    background: rgba(79, 70, 229, 0.1);
+}
+
+.checkbox-grid input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
 }
 
 .radio-group {
     display: flex;
-    gap: 2rem;
+    gap: 3rem;
+    padding: 1rem;
+    background: var(--bg-light);
+    border-radius: var(--radius-md);
 }
 
 .radio-group label {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.75rem;
     cursor: pointer;
-    font-size: 0.95rem;
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-sm);
+    transition: background-color 0.3s ease;
+}
+
+.radio-group label:hover {
+    background: rgba(79, 70, 229, 0.1);
+}
+
+.radio-group input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
 }
 
 .form-actions {
     display: flex;
-    gap: 1rem;
+    gap: 1.5rem;
     justify-content: flex-end;
-    margin-top: 2rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--border-color);
+}
+
+.form-actions .btn {
+    padding: 0.9rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    transition: all 0.3s ease;
+}
+
+/* Responsive Design for Medical Profile */
+@media (max-width: 1024px) {
+    .medical-form {
+        padding: 2.5rem;
+    }
+    
+    .form-section h2 {
+        font-size: 1.4rem;
+    }
+    
+    .form-row {
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .checkbox-grid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .medical-container {
+        padding: 0 0.5rem;
+    }
+    
+    .medical-form {
+        padding: 1.5rem;
+    }
+    
+    .form-section {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+    }
+    
+    .form-section h2 {
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .checkbox-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.75rem;
+    }
+    
+    .radio-group {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .form-actions {
+        flex-direction: column-reverse;
+        gap: 1rem;
+        justify-content: stretch;
+    }
+    
+    .form-actions .btn {
+        width: 100%;
+        text-align: center;
+    }
 }
 
 /* ===========================

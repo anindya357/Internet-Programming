@@ -47,8 +47,9 @@ async function loadAdminDashboard() {
         await loadEquipmentList();
         
         // Load users
-        const users = await api.getAllUsers({ limit: 50 });
-        updateUsersTable(users);
+        const usersResponse = await api.getAllUsers({ limit: 50 });
+        const usersData = Array.isArray(usersResponse) ? { users: usersResponse } : usersResponse;
+        updateUsersTable(usersData);
         
     } catch (error) {
         console.error('Error loading admin dashboard:', error);
@@ -416,8 +417,9 @@ async function toggleUserStatus(userId) {
         showNotification('User status updated', 'success');
         
         // Reload users
-        const users = await api.getAllUsers({ limit: 50 });
-        updateUsersTable(users);
+        const usersResponse = await api.getAllUsers({ limit: 50 });
+        const usersData = Array.isArray(usersResponse) ? { users: usersResponse } : usersResponse;
+        updateUsersTable(usersData);
     } catch (error) {
         showNotification('Failed to update user status', 'error');
     }
@@ -431,8 +433,9 @@ async function toggleUserAdmin(userId) {
         showNotification('User admin status updated', 'success');
         
         // Reload users
-        const users = await api.getAllUsers({ limit: 50 });
-        updateUsersTable(users);
+        const usersResponse = await api.getAllUsers({ limit: 50 });
+        const usersData = Array.isArray(usersResponse) ? { users: usersResponse } : usersResponse;
+        updateUsersTable(usersData);
     } catch (error) {
         showNotification('Failed to update admin status', 'error');
     }

@@ -19,6 +19,10 @@ class Workout(Base):
     intensity = Column(String(50), nullable=True)      # Low, Medium, High
     notes = Column(Text, nullable=True)
     
+    # Workout session tracking
+    start_time = Column(DateTime, nullable=True)       # When workout started
+    end_time = Column(DateTime, nullable=True)         # When workout completed
+    
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     

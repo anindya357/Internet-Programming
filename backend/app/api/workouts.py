@@ -4,6 +4,7 @@ Workout API Endpoints
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
+from datetime import datetime
 
 from app.core.database import get_db
 from app.core.security import get_current_user
@@ -161,6 +162,56 @@ async def delete_workout(
     db.commit()
     
     return {"message": "Workout deleted successfully"}
+
+
+@router.post("/{workout_id}/start", response_model=WorkoutResponse)
+async def start_workout(
+    workout_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Start a workout (record start time)"""
+    workout = db.query(Workout).filter(
+        Workout.id == workout_id,
+        Workout.user_id == current_user.id
+    ).first()
+    
+    if not workout:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Workout not found"
+        )
+    
+    workout.start_time = datetime.utcnow()
+    db.commit()
+    db.refresh(workout)
+    
+    return workout
+
+
+@router.post("/{workout_id}/complete", response_model=WorkoutResponse)
+async def complete_workout(
+    workout_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Complete a workout (record end time)"""
+    workout = db.query(Workout).filter(
+        Workout.id == workout_id,
+        Workout.user_id == current_user.id
+    ).first()
+    
+    if not workout:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Workout not found"
+        )
+    
+    workout.end_time = datetime.utcnow()
+    db.commit()
+    db.refresh(workout)
+    
+    return workout
 
 
 # Exercise endpoints

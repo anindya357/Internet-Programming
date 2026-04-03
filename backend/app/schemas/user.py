@@ -30,6 +30,7 @@ class UserUpdate(BaseModel):
     term: Optional[str] = None
     phone: Optional[str] = None
     profile_image: Optional[str] = None
+    is_admin: Optional[bool] = None
 
 
 class UserResponse(UserBase):

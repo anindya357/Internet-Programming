@@ -34,6 +34,9 @@ async function loadWorkouts(filters = {}) {
         const response = await api.getWorkouts(filters);
         workouts = response.workouts || [];
         
+        // Update the dashboard statistics
+        updateWorkoutStats(response);
+
         if (workouts.length === 0) {
             workoutList.innerHTML = `
                 <div style="text-align: center; padding: 3rem; color: #64748b;">
@@ -194,28 +197,29 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
                 // Collect form data
                 const formData = {
-                    name: document.getElementById('workoutName')?.value || `${document.getElementById('focusArea').value} Workout`,
-                    workout_type: document.getElementById('workoutType').value,
-                    focus_area: document.getElementById('focusArea').value,
-                    duration: parseInt(document.getElementById('duration').value),
+                    name: document.getElementById('workoutName')?.value || `${document.getElementById('focusArea')?.value || 'Custom'} Workout`,
+                    workout_type: document.getElementById('workoutType')?.value || 'mixed',
+                    focus_area: document.getElementById('focusArea')?.value || 'full-body',
+                    duration: parseInt(document.getElementById('duration').value) || 0,
                     intensity: document.querySelector('input[name="intensity"]:checked')?.value || 'medium',
-                    exercises: [],
-                    notes: document.getElementById('notes').value
+                    notes: document.getElementById('notes')?.value || '',
+                    exercises: []
                 };
-                
+
                 // Collect exercises
                 const exerciseItems = document.querySelectorAll('.exercise-item');
                 exerciseItems.forEach((item, idx) => {
                     const name = item.querySelector('.exercise-name').value;
-                    const sets = parseInt(item.querySelector('.exercise-sets').value);
-                    const reps = parseInt(item.querySelector('.exercise-reps').value);
-                    const weight = parseFloat(item.querySelector('.exercise-weight').value || 0);
-                    
-                    if (name && sets && reps) {
-                        formData.exercises.push({ name, sets, reps, weight, order: idx });
+                    const sets = parseInt(item.querySelector('.exercise-sets').value) || 0;
+                    const reps = parseInt(item.querySelector('.exercise-reps').value) || 0;
+                    const weightVal = item.querySelector('.exercise-weight').value;
+                    const weightStr = weightVal ? String(weightVal) : "0";
+
+                    if (name && sets > 0 && reps > 0) {
+                        formData.exercises.push({ name, sets, reps, weight: weightStr, order: idx });
                     }
                 });
-                
+
                 // Call API
                 await api.createWorkout(formData);
                 
@@ -247,4 +251,84 @@ function formatDate(date) {
         month: 'long',
         day: 'numeric'
     });
+}
+
+// Update workout statistics dashboard
+function updateWorkoutStats(response) {
+    const workoutsList = response.workouts || [];
+    const total = response.total || workoutsList.length;
+    
+    // Updates UI
+    const totalElem = document.getElementById('statTotalWorkouts');
+    const monthElem = document.getElementById('statThisMonth');
+    const streakElem = document.getElementById('statCurrentStreak');
+    const durationElem = document.getElementById('statTotalDuration');
+    
+    if (totalElem) totalElem.textContent = total;
+    
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    let thisMonthCount = 0;
+    let totalDuration = 0;
+    let activeDates = new Set();
+    
+    workoutsList.forEach(w => {
+        const d = new Date(w.created_at);
+        
+        // This Month calculation
+        if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
+            thisMonthCount++;
+        }
+        
+        // Total Duration (summing recent fetched limit limit/all)
+        totalDuration += (w.duration || 0);
+        
+        // Prepare data for streak
+        
+        // Format helper to YYYY-MM-DD local
+        const offset = d.getTimezoneOffset();
+        const localD = new Date(d.getTime() - (offset*60*1000));
+        activeDates.add(localD.toISOString().split('T')[0]);
+    });
+    
+    if (monthElem) monthElem.textContent = thisMonthCount;
+    if (durationElem) {
+        // Format duration into hours and minutes
+        const hours = Math.floor(totalDuration / 60);
+        const minutes = totalDuration % 60;
+        if (hours > 0) {
+            durationElem.textContent = hours + 'h ' + minutes + 'm';
+        } else {
+            durationElem.textContent = minutes + 'm';
+        }
+    }
+    
+    // Calculate Current Streak
+    let streak = 0;
+    let checkDate = new Date();
+    
+    // Format helper for YYYY-MM-DD local time
+    const _toDateStr = (dateObj) => {
+        const offset = dateObj.getTimezoneOffset();
+        dateObj = new Date(dateObj.getTime() - (offset*60*1000));
+        return dateObj.toISOString().split('T')[0];
+    };
+
+    let dateStr = _toDateStr(checkDate);
+    
+    // If user didn't workout today, streak might still be active if they worked out yesterday
+    if (!activeDates.has(dateStr)) {
+        checkDate.setDate(checkDate.getDate() - 1);
+        dateStr = _toDateStr(checkDate);
+    }
+    
+    while(activeDates.has(dateStr)) {
+        streak++;
+        checkDate.setDate(checkDate.getDate() - 1);
+        dateStr = _toDateStr(checkDate);
+    }
+    
+    if (streakElem) streakElem.textContent = streak;
 }

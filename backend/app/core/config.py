@@ -3,6 +3,7 @@ Application Configuration Settings
 """
 from pydantic_settings import BaseSettings
 from typing import List
+import psycopg2 
 import os
 from dotenv import load_dotenv
 
@@ -18,13 +19,10 @@ class Settings(BaseSettings):
     DEBUG: bool = True
     
     # Database
-    DATABASE_URL: str = os.getenv(
-        "DATABASE_URL", 
-        "postgresql://postgres:password@localhost:5432/fittrack_cuet"
-    )
+    DATABASE_URL: str = os.getenv("DATABASE_URL")  # Load from .env file (Supabase)
     
     # JWT Settings
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "your-super-secret-key-change-in-production")
+    SECRET_KEY: str = os.getenv("SECRET_KEY")
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     
@@ -32,9 +30,13 @@ class Settings(BaseSettings):
     CORS_ORIGINS: List[str] = [
         "http://localhost:3000",
         "http://localhost:8080",
-        "http://127.0.0.1:5500",
         "http://localhost:5500",
-        "*"
+        "http://127.0.0.1:5500",
+        "http://localhost:5501",
+        "http://127.0.0.1:5501",
+        "http://localhost:5502",
+        "http://127.0.0.1:5502",
+        "http://127.0.0.1:8000"
     ]
     
     # Gemini AI
@@ -44,6 +46,19 @@ class Settings(BaseSettings):
         env_file = ".env"
         case_sensitive = True
         extra = "ignore"  # Allow extra fields in .env file
+    
+    def test_psycopg2_connection(self):
+        """Test direct psycopg2 connection"""
+        try:
+            connection = psycopg2.connect(self.DATABASE_URL)
+            cursor = connection.cursor()
+            cursor.execute("SELECT version();")
+            db_version = cursor.fetchone()
+            cursor.close()
+            connection.close()
+            return {"status": "success", "version": db_version}
+        except Exception as e:
+            return {"status": "error", "message": str(e)}
 
 
 settings = Settings()

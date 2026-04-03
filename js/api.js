@@ -14,20 +14,19 @@ const API_ENDPOINTS = {
     changePassword: `${API_BASE_URL}/auth/change-password`,
     
     // Users
-    users: `${API_BASE_URL}/users`,
+    users: `${API_BASE_URL}/users/`,
     profile: `${API_BASE_URL}/users/me`,
-    
+
     // Workouts
-    workouts: `${API_BASE_URL}/workouts`,
-    
+    workouts: `${API_BASE_URL}/workouts/`,
+
     // Diet
-    diet: `${API_BASE_URL}/diet`,
-    
+    diet: `${API_BASE_URL}/diet/`,
+
     // Medical Profile
-    medicalProfile: `${API_BASE_URL}/medical-profile`,
-    
+    medicalProfile: `${API_BASE_URL}/medical-profile/`,
     // Equipment
-    equipment: `${API_BASE_URL}/equipment`,
+    equipment: `${API_BASE_URL}/equipment/`,
     equipmentCategories: `${API_BASE_URL}/equipment/categories`,
     
     // AI Instructor
@@ -37,12 +36,12 @@ const API_ENDPOINTS = {
     // Admin
     gymStatus: `${API_BASE_URL}/admin/gym-status`,
     announcements: `${API_BASE_URL}/admin/announcements`,
-    adminUsers: `${API_BASE_URL}/admin/users`,
+    adminUsers: `${API_BASE_URL}/users/`,
     adminStats: `${API_BASE_URL}/admin/stats`,
     
     // Notifications
-    notifications: `${API_BASE_URL}/notifications`,
-    notificationStats: `${API_BASE_URL}/notifications/stats`
+    notifications: `${API_BASE_URL}/notifications/`,
+    notificationStats: `${API_BASE_URL}/notifications/stats`,
 };
 
 // Get auth token from localStorage
@@ -203,38 +202,37 @@ const api = {
     },
     
     async getWorkout(id) {
-        return await apiRequest(`${API_ENDPOINTS.workouts}/${id}`);
+        return await apiRequest(`${API_ENDPOINTS.workouts}${id}`);
     },
-    
+
     async createWorkout(workoutData) {
         return await apiRequest(API_ENDPOINTS.workouts, {
             method: 'POST',
             body: JSON.stringify(workoutData)
         });
     },
-    
+
     async updateWorkout(id, workoutData) {
-        return await apiRequest(`${API_ENDPOINTS.workouts}/${id}`, {
+        return await apiRequest(`${API_ENDPOINTS.workouts}${id}`, {
             method: 'PUT',
             body: JSON.stringify(workoutData)
         });
     },
-    
+
     async deleteWorkout(id) {
-        return await apiRequest(`${API_ENDPOINTS.workouts}/${id}`, {
+        return await apiRequest(`${API_ENDPOINTS.workouts}${id}`, {
             method: 'DELETE'
         });
     },
-    
+
     async startWorkout(id) {
-        return await apiRequest(`${API_ENDPOINTS.workouts}/${id}/start`, {
+        return await apiRequest(`${API_ENDPOINTS.workouts}${id}/start`, {
             method: 'POST'
         });
     },
-    
+
     async completeWorkout(id, data = {}) {
-        return await apiRequest(`${API_ENDPOINTS.workouts}/${id}/complete`, {
-            method: 'POST',
+        return await apiRequest(`${API_ENDPOINTS.workouts}${id}/complete`, {
             body: JSON.stringify(data)
         });
     },
@@ -284,7 +282,7 @@ const api = {
     },
     
     async getHealthMetrics() {
-        return await apiRequest(`${API_ENDPOINTS.medicalProfile}/metrics`);
+        return await apiRequest(`${API_ENDPOINTS.medicalProfile}/health-metrics`);
     },
     
     // Equipment
@@ -386,14 +384,17 @@ const api = {
     },
     
     async toggleUserStatus(userId) {
-        return await apiRequest(`${API_ENDPOINTS.adminUsers}/${userId}/toggle-status`, {
+        return await apiRequest(`${API_ENDPOINTS.adminUsers}/${userId}/toggle-active`, {
             method: 'POST'
         });
     },
     
     async toggleUserAdmin(userId) {
-        return await apiRequest(`${API_ENDPOINTS.adminUsers}/${userId}/toggle-admin`, {
-            method: 'POST'
+        // Get current admin status from table data
+        const isCurrentlyAdmin = document.querySelector(`button[onclick="toggleUserAdmin(${userId})"]`)?.title.includes('Remove');
+        return await apiRequest(`${API_ENDPOINTS.adminUsers}/${userId}`, {
+            method: 'PUT',
+            body: JSON.stringify({ is_admin: !isCurrentlyAdmin })
         });
     },
     
@@ -414,25 +415,24 @@ const api = {
     },
     
     async getNotification(id) {
-        return await apiRequest(`${API_ENDPOINTS.notifications}/${id}`);
+        return await apiRequest(`${API_ENDPOINTS.notifications}${id}`);
     },
-    
+
     async markNotificationAsRead(id) {
-        return await apiRequest(`${API_ENDPOINTS.notifications}/${id}`, {
+        return await apiRequest(`${API_ENDPOINTS.notifications}${id}`, {
             method: 'PUT',
             body: JSON.stringify({ is_read: true })
         });
     },
-    
+
     async markAllNotificationsAsRead() {
-        return await apiRequest(`${API_ENDPOINTS.notifications}/mark-all-read`, {
+        return await apiRequest(`${API_ENDPOINTS.notifications}mark-all-read`, {
             method: 'POST'
         });
     },
-    
+
     async deleteNotification(id) {
-        return await apiRequest(`${API_ENDPOINTS.notifications}/${id}`, {
-            method: 'DELETE'
+        return await apiRequest(`${API_ENDPOINTS.notifications}${id}`, {
         });
     },
     
