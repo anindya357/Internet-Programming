@@ -169,6 +169,35 @@ async def create_announcement(
     db.commit()
     db.refresh(announcement)
     
+    # Create notifications for all users
+    from app.models.notification import Notification
+    users = db.query(User).all()
+    
+    notifications = []
+    category_map = {
+        "general": "system",
+        "maintenance": "system",
+        "event": "info",
+        "urgent": "warning"
+    }
+    notif_type = "warning" if announcement_data.priority == "high" else "info"
+    notif_category = category_map.get(announcement_data.category, "system")
+
+    for user in users:
+        new_notif = Notification(
+            user_id=user.id,
+            title=f"New Announcement: {announcement.title}",
+            message=announcement.content[:200] + ("..." if len(announcement.content) > 200 else ""),
+            type=notif_type,
+            category=notif_category,
+            action_url="dashboard.html"
+        )
+        notifications.append(new_notif)
+    
+    if notifications:
+        db.add_all(notifications)
+        db.commit()
+
     return announcement
 
 

@@ -17,6 +17,18 @@ document.addEventListener('DOMContentLoaded', function() {
     loadRecentActivity();
     setupEquipmentFilters();
     setupLogout();
+
+    // Start polling gym status for real-time updates
+    setInterval(async () => {
+        try {
+            const gymStatus = await api.getGymStatus();
+            if (gymStatus) {
+                updateGymStatus(gymStatus);
+            }
+        } catch (error) {
+            console.error('Error polling gym status:', error);
+        }
+    }, 15000);
 });
 
 async function loadDashboardData() {
@@ -25,14 +37,14 @@ async function loadDashboardData() {
         const userData = getUserData();
         if (userData) {
             updateUserDisplay(userData);
-            
+
             // Show admin link if user is admin
             const adminNavLink = document.getElementById('adminNavLink');
             if (adminNavLink && userData.is_admin) {
                 adminNavLink.style.display = 'block';
             }
         }
-        
+
         // Load gym status
         const gymStatus = await api.getGymStatus();
         updateGymStatus(gymStatus);
@@ -68,14 +80,14 @@ function updateUserDisplay(user) {
 }
 
 function updateGymStatus(status) {
-    const statusBadge = document.querySelector('.gym-status-badge');
+    const statusBadge = document.querySelector('.gym-status-badge, .status-badge');
     const occupancyText = document.querySelector('.gym-occupancy');
-    
+
     if (statusBadge) {
-        statusBadge.textContent = status.is_open ? 'Open' : 'Closed';
-        statusBadge.className = `gym-status-badge ${status.is_open ? 'open' : 'closed'}`;
+        statusBadge.textContent = status.is_open ? 'Open Now' : 'Off Now';
+        statusBadge.className = `status-badge gym-status-badge ${status.is_open ? 'open' : 'closed'}`;
     }
-    
+
     if (occupancyText) {
         occupancyText.textContent = `${status.current_occupancy}/${status.max_capacity} members`;
     }
@@ -257,3 +269,4 @@ async function loadRecentActivity() {
         activityList.innerHTML = '<li class="activity-item" style="justify-content: center; color: #ef4444;">Failed to load activity.</li>';
     }
 }
+
