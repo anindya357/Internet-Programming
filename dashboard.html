@@ -305,54 +305,10 @@
             <!-- Recent Activity Section -->
             <section class="activity-section" aria-labelledby="activity-heading">
                 <h2 class="section-title" id="activity-heading">Recent Activity</h2>
-                <ul class="activity-list" role="list">
-                    <li class="activity-item">
-                        <figure class="activity-icon blue" aria-hidden="true">
-                            <i class="fas fa-dumbbell"></i>
-                        </figure>
-                        <div class="activity-content">
-                            <h3>Chest & Triceps Workout</h3>
-                            <p>
-                                <time datetime="2026-01-27T18:30:00">Yesterday at 6:30 PM</time>
-                                • <span>45 minutes</span>
-                            </p>
-                        </div>
-                        <a href="#" class="btn-link" aria-label="View details for Chest & Triceps Workout">
-                            View Details
-                        </a>
-                    </li>
-                    
-                    <li class="activity-item">
-                        <figure class="activity-icon green" aria-hidden="true">
-                            <i class="fas fa-running"></i>
-                        </figure>
-                        <div class="activity-content">
-                            <h3>Cardio Session</h3>
-                            <p>
-                                <time datetime="2026-01-26T07:00:00">2 days ago at 7:00 AM</time>
-                                • <span>30 minutes</span>
-                            </p>
-                        </div>
-                        <a href="#" class="btn-link" aria-label="View details for Cardio Session">
-                            View Details
-                        </a>
-                    </li>
-                    
-                    <li class="activity-item">
-                        <figure class="activity-icon orange" aria-hidden="true">
-                            <i class="fas fa-heartbeat"></i>
-                        </figure>
-                        <div class="activity-content">
-                            <h3>Leg Day Workout</h3>
-                            <p>
-                                <time datetime="2026-01-25T18:00:00">3 days ago at 6:00 PM</time>
-                                • <span>60 minutes</span>
-                            </p>
-                        </div>
-                        <a href="#" class="btn-link" aria-label="View details for Leg Day Workout">
-                            View Details
-                        </a>
-                    </li>
+                <ul class="activity-list" id="recentActivityList" role="list">
+                    <div class="loading" style="text-align: center; padding: 2rem;">
+                        <i class="fas fa-spinner fa-spin"></i> Loading recent activity...
+                    </div>
                 </ul>
             </section>
             
@@ -380,3 +336,4 @@
     <script src="js/dashboard.js" defer></script>
 </body>
 </html>
+

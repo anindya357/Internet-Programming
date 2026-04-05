@@ -276,29 +276,45 @@
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="equipmentDescription">Description</label>
-                    <textarea id="equipmentDescription" name="description" rows="3"></textarea>
-                </div>
+                  <div class="form-row">
+                      <div class="form-group">
+                          <label for="equipmentDifficulty">Difficulty Level</label>
+                          <select id="equipmentDifficulty" name="difficulty">
+                              <option value="">Select Level</option>
+                              <option value="Beginner">Beginner</option>
+                              <option value="Intermediate">Intermediate</option>
+                              <option value="Advanced">Advanced</option>
+                          </select>
+                      </div>
+                      <div class="form-group">
+                          <label for="equipmentLocation">Location in Gym</label>
+                          <input type="text" id="equipmentLocation" name="location" placeholder="e.g., 2nd Floor, Free Weight Zone">
+                      </div>
+                  </div>
 
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeAddEquipmentModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i> Add Equipment
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
+                  <div class="form-group">
+                      <label for="equipmentMuscleGroups">Muscle Groups (Comma-separated)</label>
+                      <input type="text" id="equipmentMuscleGroups" name="muscle_groups" placeholder="e.g., Chest, Triceps, Shoulders">
+                  </div>
+                  
+                  <div class="form-group">
+                      <label for="equipmentImageUrl">Image URL</label>
+                      <input type="url" id="equipmentImageUrl" name="image_url" placeholder="https://example.com/image.png">
+                  </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2026 FitTrack CUET. All rights reserved.</p>
-            <div class="footer-links">
-                <a href="rules-safety.html">Rules & Safety</a>
-                <a href="#">Privacy Policy</a>
-                <a href="#">Contact Support</a>
+                  <div class="form-group">
+                      <label for="equipmentDescription">Description</label>
+                      <textarea id="equipmentDescription" name="description" rows="2"></textarea>
+                  </div>
+                  
+                  <div class="form-group">
+                      <label for="equipmentInstructions">Instructions</label>
+                      <textarea id="equipmentInstructions" name="instructions" rows="2"></textarea>
+                  </div>
+                  
+                  <div class="form-group">
+                      <label for="equipmentSafetyTips">Safety Tips</label>
+                      <textarea id="equipmentSafetyTips" name="safety_tips" rows="2"></textarea>
             </div>
         </div>
     </footer>

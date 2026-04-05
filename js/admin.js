@@ -2,6 +2,8 @@
 // Admin Dashboard Functions
 // ===========================
 
+let currentEditEquipmentId = null;
+
 document.addEventListener('DOMContentLoaded', function() {
     // Check authentication and admin status
     if (!isLoggedIn()) {
@@ -222,8 +224,8 @@ async function loadEquipmentList() {
                     <td><span class="badge badge-${statusClass}">${status}</span></td>
                     <td>${lastMaintenance}</td>
                     <td>
-                        <button class="btn-icon" title="Edit"><i class="fas fa-edit"></i></button>
-                        <button class="btn-icon" title="Delete"><i class="fas fa-trash"></i></button>
+                        <button class="btn-icon" onclick="openEditEquipmentModal(${item.id})" title="Edit"><i class="fas fa-edit"></i></button>
+                        <button class="btn-icon" onclick="deleteEquipment(${item.id})" title="Delete"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>
             `;
@@ -307,31 +309,45 @@ function setupAddEquipmentModal() {
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            // Setup loader and get text
             const submitBtn = form.querySelector('button[type="submit"]');
-            const originalText = submitBtn?.innerHTML || 'Add';
+            const originalText = submitBtn?.innerHTML || (currentEditEquipmentId ? 'Save Changes' : 'Add Equipment');
+            const submittingText = currentEditEquipmentId ? 'Saving...' : 'Adding...';
             if (submitBtn) {
                 submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
+                submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${submittingText}`;
             }
-            
+
             const formData = {
                 name: document.getElementById('equipmentName').value,
                 category: document.getElementById('equipmentCategory').value,
                 quantity: parseInt(document.getElementById('equipmentQuantity').value),
-                description: document.getElementById('equipmentDescription').value
+                difficulty_level: document.getElementById('equipmentDifficulty')?.value || null,
+                location: document.getElementById('equipmentLocation')?.value || null,
+                muscle_groups: document.getElementById('equipmentMuscleGroups')?.value || null,
+                image_url: document.getElementById('equipmentImageUrl')?.value || null,
+                description: document.getElementById('equipmentDescription')?.value || null,
+                instructions: document.getElementById('equipmentInstructions')?.value || null,
+                safety_tips: document.getElementById('equipmentSafetyTips')?.value || null
             };
-            
+
             try {
-                await api.createEquipment(formData);
-                
-                showNotification('Equipment added successfully!', 'success');
+                if (currentEditEquipmentId) {
+                    await api.updateEquipment(currentEditEquipmentId, formData);
+                    showNotification('Equipment updated successfully!', 'success');
+                } else {
+                    await api.createEquipment(formData);
+                    showNotification('Equipment added successfully!', 'success');
+                }
+
                 closeAddEquipmentModal();
                 form.reset();
-                
+                currentEditEquipmentId = null;
+
                 // Reload equipment list
                 await loadEquipmentList();
             } catch (error) {
-                showNotification(error.message || 'Failed to add equipment', 'error');
+                showNotification(error.message || `Failed to ${currentEditEquipmentId ? 'update' : 'add'} equipment`, 'error');
             } finally {
                 if (submitBtn) {
                     submitBtn.disabled = false;
@@ -343,9 +359,68 @@ function setupAddEquipmentModal() {
 }
 
 function openAddEquipmentModal() {
+    currentEditEquipmentId = null;
+    const form = document.getElementById('addEquipmentForm');
     const modal = document.getElementById('addEquipmentModal');
+    if (form) {
+        form.reset();
+        const header = modal.querySelector('h2');
+        if (header) header.innerHTML = '<i class="fas fa-plus-circle"></i> Add New Equipment';
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) submitBtn.innerHTML = 'Add Equipment';
+    }
     if (modal) {
         modal.classList.add('active');
+    }
+}
+
+async function openEditEquipmentModal(id) {
+    try {
+        currentEditEquipmentId = id;
+        const equipment = await api.getEquipmentById(id);
+        
+        const form = document.getElementById('addEquipmentForm');
+        const modal = document.getElementById('addEquipmentModal');
+        
+        if (form && equipment) {
+            document.getElementById('equipmentName').value = equipment.name || '';
+            document.getElementById('equipmentCategory').value = equipment.category || '';
+            document.getElementById('equipmentQuantity').value = equipment.quantity || 1;
+            
+            if (document.getElementById('equipmentDifficulty')) document.getElementById('equipmentDifficulty').value = equipment.difficulty_level || '';
+            if (document.getElementById('equipmentLocation')) document.getElementById('equipmentLocation').value = equipment.location || '';
+            if (document.getElementById('equipmentMuscleGroups')) document.getElementById('equipmentMuscleGroups').value = equipment.muscle_groups || '';
+            if (document.getElementById('equipmentImageUrl')) document.getElementById('equipmentImageUrl').value = equipment.image_url || '';
+            if (document.getElementById('equipmentDescription')) document.getElementById('equipmentDescription').value = equipment.description || '';
+            if (document.getElementById('equipmentInstructions')) document.getElementById('equipmentInstructions').value = equipment.instructions || '';
+            if (document.getElementById('equipmentSafetyTips')) document.getElementById('equipmentSafetyTips').value = equipment.safety_tips || '';
+
+            const header = modal.querySelector('h2');
+            if (header) header.innerHTML = '<i class="fas fa-edit"></i> Edit Equipment';
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) submitBtn.innerHTML = 'Save Changes';
+        }
+        
+        if (modal) {
+            modal.classList.add('active');
+        }
+    } catch (error) {
+        showNotification('Failed to load equipment details', 'error');
+        currentEditEquipmentId = null;
+    }
+}
+
+async function deleteEquipment(id) {
+    if (!confirm('Are you sure you want to delete this equipment? This action cannot be undone.')) {
+        return;
+    }
+    
+    try {
+        await api.deleteEquipment(id);
+        showNotification('Equipment deleted successfully', 'success');
+        await loadEquipmentList();
+    } catch (error) {
+        showNotification(error.message || 'Failed to delete equipment', 'error');
     }
 }
 
@@ -353,6 +428,7 @@ function closeAddEquipmentModal() {
     const modal = document.getElementById('addEquipmentModal');
     if (modal) {
         modal.classList.remove('active');
+        currentEditEquipmentId = null;
     }
 }
 
@@ -477,30 +553,7 @@ async function filterEquipment() {
     }
 }
 
-// Handle delete equipment
-async function deleteEquipment(id) {
-    if (!confirm('Are you sure you want to delete this equipment?')) return;
-    
-    try {
-        await apiRequest(`${API_BASE_URL}/equipment/${id}`, {
-            method: 'DELETE'
-        });
-        showNotification('Equipment deleted successfully!', 'success');
-        
-        // Reload equipment list
-        if (typeof loadEquipment === 'function') {
-            loadEquipment();
-        }
-    } catch (error) {
-        showNotification('Failed to delete equipment', 'error');
-    }
-}
 
-// Handle edit equipment
-function editEquipment(id) {
-    // Open edit modal with equipment data
-    showNotification('Edit equipment functionality', 'info');
-}
 
 // Export data functionality
 document.addEventListener('DOMContentLoaded', function() {

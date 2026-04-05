@@ -243,6 +243,35 @@ async def get_admin_stats(
     
     gym_status = db.query(GymStatus).first()
     
+    # Department distribution
+    from sqlalchemy import func
+    dept_distribution = db.query(User.department, func.count(User.id)).group_by(User.department).all()
+    department_stats = [{"department": str(d[0] or "Unknown"), "count": d[1]} for d in dept_distribution]
+
+    # Monthly workout trends (rolling 6 months grouped by month-year)
+    import calendar
+    from datetime import datetime
+
+    today = datetime.utcnow()
+    monthly_workouts = {}
+    for i in range(5, -1, -1):
+        year, month = today.year, today.month - i
+        if month <= 0:
+            month += 12
+            year -= 1
+        month_str = f"{calendar.month_abbr[month]} {year}"
+        monthly_workouts[month_str] = 0
+
+    workouts = db.query(Workout.created_at).all()
+    for w in workouts:
+        if w[0]:
+            year, month = w[0].year, w[0].month
+            month_str = f"{calendar.month_abbr[month]} {year}"
+            if month_str in monthly_workouts:
+                monthly_workouts[month_str] += 1
+
+    trends_list = [{"month": k, "workouts": v} for k, v in monthly_workouts.items()]
+
     return {
         "users": {
             "total": total_users,
@@ -262,5 +291,7 @@ async def get_admin_stats(
             "is_open": gym_status.is_open if gym_status else True,
             "current_occupancy": gym_status.current_occupancy if gym_status else 0,
             "max_capacity": gym_status.max_capacity if gym_status else 100
-        }
+        },
+        "department_distribution": department_stats,
+        "monthly_trends": trends_list
     }

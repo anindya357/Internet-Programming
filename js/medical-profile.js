@@ -65,20 +65,23 @@ function populateForm(profile) {
     if (profile.fitness_goal) document.getElementById('fitnessGoal').value = profile.fitness_goal;
     if (profile.physical_limitations) document.getElementById('physicalLimitations').value = profile.physical_limitations;
     if (profile.activity_level) document.getElementById('fitnessLevel').value = profile.activity_level;
-    
-    // Emergency contact
-    if (profile.emergency_contact) {
-        if (profile.emergency_contact.name) document.getElementById('emergencyName').value = profile.emergency_contact.name;
-        if (profile.emergency_contact.relation) document.getElementById('emergencyRelation').value = profile.emergency_contact.relation;
-        if (profile.emergency_contact.phone) document.getElementById('emergencyPhone').value = profile.emergency_contact.phone;
+        if (profile.target_weight) document.getElementById('targetWeight').value = profile.target_weight;
+
+        // Emergency contact
+        if (profile.emergency_contact) {
+            if (profile.emergency_contact.name) document.getElementById('emergencyName').value = profile.emergency_contact.name;
+            if (profile.emergency_contact.relation) document.getElementById('emergencyRelation').value = profile.emergency_contact.relation;
+            if (profile.emergency_contact.phone) document.getElementById('emergencyPhone').value = profile.emergency_contact.phone;
+        }
+
+        // Doctor info
+        if (profile.doctor_name) document.getElementById('doctorName').value = profile.doctor_name;
+        if (profile.doctor_phone) document.getElementById('doctorPhone').value = profile.doctor_phone;
+        
+        const heightInput = document.getElementById('height');
+        if(heightInput) heightInput.dispatchEvent(new Event('input'));
     }
-    
-    // Trigger BMI calculation
-    const heightInput = document.getElementById('height');
-    if (heightInput) {
-        heightInput.dispatchEvent(new Event('input'));
-    }
-}
+
 
 function populateFormFromLocal(profile) {
     // Basic info
@@ -113,38 +116,46 @@ function populateFormFromLocal(profile) {
     if (profile.fitnessGoal) document.getElementById('fitnessGoal').value = profile.fitnessGoal;
     if (profile.physicalLimitations) document.getElementById('physicalLimitations').value = profile.physicalLimitations;
     if (profile.fitnessLevel) document.getElementById('fitnessLevel').value = profile.fitnessLevel;
-    
+    if (profile.targetWeight) document.getElementById('targetWeight').value = profile.targetWeight;
+
     // Emergency contact
     if (profile.emergencyName) document.getElementById('emergencyName').value = profile.emergencyName;
     if (profile.emergencyRelation) document.getElementById('emergencyRelation').value = profile.emergencyRelation;
     if (profile.emergencyPhone) document.getElementById('emergencyPhone').value = profile.emergencyPhone;
+
+    // Doctor info
+    if (profile.doctorName) document.getElementById('doctorName').value = profile.doctorName;
+    if (profile.doctorPhone) document.getElementById('doctorPhone').value = profile.doctorPhone;
+    
+    const heightInput = document.getElementById('height');
+    if(heightInput) heightInput.dispatchEvent(new Event('input'));
 }
 
 function setupBMICalculator() {
     const heightInput = document.getElementById('height');
     const weightInput = document.getElementById('weight');
     const bmiInput = document.getElementById('bmi');
-    
+
     function calculateBMI() {
         const height = parseFloat(heightInput.value);
         const weight = parseFloat(weightInput.value);
-        
+
         if (height && weight && height > 0 && weight > 0) {
             const heightInMeters = height / 100;
             const bmi = (weight / (heightInMeters * heightInMeters)).toFixed(1);
-            
+
             let category = '';
             if (bmi < 18.5) category = 'Underweight';
             else if (bmi < 25) category = 'Normal';
             else if (bmi < 30) category = 'Overweight';
             else category = 'Obese';
-            
-            bmiInput.value = `${bmi} (${category})`;
+
+            if(bmiInput) bmiInput.value = `${bmi} (${category})`;
         } else {
-            bmiInput.value = '';
+            if(bmiInput) bmiInput.value = '';
         }
     }
-    
+
     if (heightInput && weightInput) {
         heightInput.addEventListener('input', calculateBMI);
         weightInput.addEventListener('input', calculateBMI);
@@ -198,11 +209,14 @@ function setupFormSubmission() {
                 fitness_goal: document.getElementById('fitnessGoal').value,
                 physical_limitations: document.getElementById('physicalLimitations').value,
                 activity_level: document.getElementById('fitnessLevel').value,
+                target_weight: document.getElementById('targetWeight').value ? parseFloat(document.getElementById('targetWeight').value) : null,
                 emergency_contact: {
                     name: document.getElementById('emergencyName').value,
                     relation: document.getElementById('emergencyRelation').value,
                     phone: document.getElementById('emergencyPhone').value
-                }
+                },
+                doctor_name: document.getElementById('doctorName').value,
+                doctor_phone: document.getElementById('doctorPhone').value
             };
             
             try {
@@ -229,9 +243,12 @@ function setupFormSubmission() {
                     fitnessGoal: formData.fitness_goal,
                     physicalLimitations: formData.physical_limitations,
                     fitnessLevel: formData.activity_level,
+                    targetWeight: formData.target_weight,
                     emergencyName: formData.emergency_contact.name,
                     emergencyRelation: formData.emergency_contact.relation,
                     emergencyPhone: formData.emergency_contact.phone,
+                    doctorName: formData.doctor_name,
+                    doctorPhone: formData.doctor_phone,
                     lastUpdated: new Date().toISOString()
                 }));
                 

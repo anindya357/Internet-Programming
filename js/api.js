@@ -306,6 +306,19 @@ const api = {
             body: JSON.stringify(equipmentData)
         });
     },
+
+    async updateEquipment(id, equipmentData) {
+        return await apiRequest(`${API_ENDPOINTS.equipment}${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(equipmentData)
+        });
+    },
+
+    async deleteEquipment(id) {
+        return await apiRequest(`${API_ENDPOINTS.equipment}${id}`, {
+            method: 'DELETE'
+        });
+    },
     
     // AI Instructor
     async chatWithAI(question, context = 'general', includeHistory = true) {

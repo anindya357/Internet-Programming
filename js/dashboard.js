@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     loadDashboardData();
     loadEquipment();
+    loadRecentActivity();
     setupEquipmentFilters();
     setupLogout();
 });
@@ -203,4 +204,56 @@ function setupLogout() {
 
 function capitalizeFirst(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+async function loadRecentActivity() {
+    const activityList = document.getElementById('recentActivityList');
+    if (!activityList) return;
+
+    try {
+        const response = await api.getWorkouts({ limit: 5 });
+        const workouts = response.workouts || [];
+
+        if (workouts.length === 0) {
+            activityList.innerHTML = '<li class="activity-item" style="justify-content: center; color: #64748b;">No recent activity found.</li>';
+            return;
+        }
+
+        activityList.innerHTML = workouts.map(workout => {
+            const date = new Date(workout.created_at);
+            const timeString = date.toLocaleDateString() + ' at ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            // Choose color and icon based on workout type
+            let color = 'blue';
+            let icon = 'dumbbell';
+            if (workout.workout_type === 'cardio') {
+                color = 'green';
+                icon = 'running';
+            } else if (workout.workout_type === 'flexibility' || workout.workout_type === 'yoga') {
+                color = 'orange';
+                icon = 'heartbeat';
+            }
+
+            return `
+                <li class="activity-item">
+                    <figure class="activity-icon ${color}" aria-hidden="true">
+                        <i class="fas fa-${icon}"></i>
+                    </figure>
+                    <div class="activity-content">
+                        <h3>${workout.name || (capitalizeFirst(workout.focus_area || 'General') + ' ' + capitalizeFirst(workout.workout_type || 'Workout'))}</h3>
+                        <p>
+                            <time datetime="${workout.created_at}">${timeString}</time>
+                            &bull; <span>${workout.duration || 0} minutes</span>
+                        </p>
+                    </div>
+                    <a href="workout-history.html" class="btn-link" aria-label="View details">
+                        View Details
+                    </a>
+                </li>
+            `;
+        }).join('');
+    } catch (error) {
+        console.error('Error loading recent activity:', error);
+        activityList.innerHTML = '<li class="activity-item" style="justify-content: center; color: #ef4444;">Failed to load activity.</li>';
+    }
 }

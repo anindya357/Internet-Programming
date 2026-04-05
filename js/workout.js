@@ -154,15 +154,55 @@ function addExerciseField() {
     exerciseList.appendChild(newExercise);
 }
 
+function closeWorkoutDetailsModal() {
+    const modal = document.getElementById('workoutDetailsModal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+}
+
 async function viewWorkout(id) {
     try {
         const workout = await api.getWorkout(id);
         if (workout) {
-            const exerciseList = (workout.exercises || [])
-                .map(ex => `- ${ex.name}: ${ex.sets} sets x ${ex.reps} reps${ex.weight ? ` @ ${ex.weight}kg` : ''}`)
-                .join('\n');
+            const content = document.getElementById('workoutDetailsContent');
+            if (!content) return;
             
-            alert(`Workout Details:\n\nName: ${workout.name || 'Unnamed'}\nDate: ${formatDate(workout.created_at)}\nType: ${workout.workout_type || 'General'}\nDuration: ${workout.duration || 0} min\nIntensity: ${workout.intensity || 'medium'}\n\nExercises:\n${exerciseList || 'No exercises'}\n\nNotes: ${workout.notes || 'No notes'}`);
+            const exerciseList = (workout.exercises || [])
+                .map(ex => `
+                    <div style="background: #f8fafc; padding: 10px; border-radius: 6px; margin-bottom: 8px;">
+                        <strong>${ex.name}</strong><br>
+                        <span style="color: #64748b; font-size: 0.9em;">
+                            ${ex.sets} sets &times; ${ex.reps} reps
+                            ${ex.weight ? ` @ ${ex.weight}kg` : ''}
+                        </span>
+                    </div>
+                `).join('');
+
+            content.innerHTML = `
+                <div style="margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 10px; color: var(--primary-color);">${workout.name || 'Unnamed Workout'}</h3>
+                    <p><strong>Date:</strong> ${formatDate(workout.created_at)}</p>
+                    <p><strong>Type:</strong> <span style="text-transform: capitalize;">${workout.workout_type || 'General'}</span></p>
+                    <p><strong>Duration:</strong> ${workout.duration || 0} minutes</p>
+                    <p><strong>Intensity:</strong> <span style="text-transform: capitalize;">${workout.intensity || 'Medium'}</span></p>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <h4 style="margin-bottom: 10px; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px;">Exercises</h4>
+                    ${exerciseList || '<p style="color: #64748b; font-style: italic;">No exercises recorded</p>'}
+                </div>
+                <div>
+                    <h4 style="margin-bottom: 10px; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px;">Notes</h4>
+                    <p style="background: #f8fafc; padding: 10px; border-radius: 6px; color: #475569;">
+                        ${workout.notes ? workout.notes.replace(/\n/g, '<br>') : '<em>No notes added.</em>'}
+                    </p>
+                </div>
+            `;
+            
+            const modal = document.getElementById('workoutDetailsModal');
+            if (modal) {
+                modal.classList.add('active');
+            }
         }
     } catch (error) {
         showNotification('Failed to load workout details', 'error');
