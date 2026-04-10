@@ -16,6 +16,7 @@ const API_ENDPOINTS = {
     // Users
     users: `${API_BASE_URL}/users/`,
     profile: `${API_BASE_URL}/users/me`,
+    settings: `${API_BASE_URL}/users/me/settings`,
 
     // Workouts
     workouts: `${API_BASE_URL}/workouts/`,
@@ -59,6 +60,7 @@ function removeAuthToken() {
     localStorage.removeItem('authToken');
     localStorage.removeItem('userData');
     localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('theme');
 }
 
 // Check if user is logged in
@@ -172,7 +174,18 @@ const api = {
             body: JSON.stringify(userData)
         });
     },
-    
+
+    async getUserSettings() {
+        return await apiRequest(API_ENDPOINTS.settings);
+    },
+
+    async updateUserSettings(settingsData) {
+        return await apiRequest(API_ENDPOINTS.settings, {
+            method: 'PUT',
+            body: JSON.stringify(settingsData)
+        });
+    },
+
     async changePassword(passwordData) {
         return await apiRequest(`${API_ENDPOINTS.profile}/change-password`, {
             method: 'POST',

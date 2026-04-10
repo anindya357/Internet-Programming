@@ -40,9 +40,20 @@ async function handleLogin(e) {
         // Call backend API
         await api.login(studentId, password);
         
-        showNotification('Login successful! Redirecting...', 'success');
-        
-        // Redirect to dashboard with enough time for data to be saved
+        // Fetch user settings and apply theme
+        try {
+            const settings = await api.getUserSettings();
+            const theme = settings.dark_mode ? 'dark' : 'light';
+            localStorage.setItem('theme', theme);
+            if (theme === 'dark') {
+                document.body.classList.add('dark-theme');
+            } else {
+                document.body.classList.remove('dark-theme');
+            }
+        } catch (settingsError) {
+            console.error('Failed to load user settings:', settingsError);
+        }
+
         setTimeout(() => {
             window.location.href = 'dashboard.html';
         }, 800);
@@ -109,9 +120,20 @@ async function handleRegister(e) {
         // Call backend API
         await api.register(userData);
         
-        showNotification('Registration successful! Redirecting to dashboard...', 'success');
-        
-        // Redirect to dashboard (user is now logged in)
+        // Fetch user settings and apply theme
+        try {
+            const settings = await api.getUserSettings();
+            const theme = settings.dark_mode ? 'dark' : 'light';
+            localStorage.setItem('theme', theme);
+            if (theme === 'dark') {
+                document.body.classList.add('dark-theme');
+            } else {
+                document.body.classList.remove('dark-theme');
+            }
+        } catch (settingsError) {
+            console.error('Failed to load user settings:', settingsError);
+        }
+
         setTimeout(() => {
             window.location.href = 'dashboard.html';
         }, 1500);

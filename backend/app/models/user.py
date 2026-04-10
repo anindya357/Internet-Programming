@@ -34,6 +34,8 @@ class User(Base):
     diet_plan = relationship("DietPlan", back_populates="user", uselist=False, cascade="all, delete-orphan")
     chat_history = relationship("ChatHistory", back_populates="user", cascade="all, delete-orphan")
     notifications = relationship("Notification", back_populates="user", cascade="all, delete-orphan")
+    settings = relationship("UserSettings", back_populates="user", uselist=False, cascade="all, delete-orphan")
+    
     
     def __repr__(self):
         return f"<User {self.student_id}: {self.full_name}>"

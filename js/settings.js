@@ -95,9 +95,9 @@ function setupTabNavigation() {
 }
 
 /**
- * Load settings from localStorage
+ * Load settings from localStorage and backend
  */
-function loadSettings() {
+async function loadSettings() {
     try {
         const savedSettings = localStorage.getItem('userSettings');
         if (savedSettings) {
@@ -105,8 +105,17 @@ function loadSettings() {
             currentSettings = { ...currentSettings, ...parsed };
         }
         
+        // Fetch real-time settings from backend
+        const backendSettings = await api.getUserSettings();
+        if (backendSettings) {
+            currentSettings.preferences.theme = backendSettings.dark_mode ? 'dark' : 'light';
+            currentSettings.notifications.emailNotifications = backendSettings.receive_notifications;
+            localStorage.setItem('userSettings', JSON.stringify(currentSettings));
+        }
+
         // Apply settings to UI
         applySettings();
+        applyTheme(currentSettings.preferences.theme);
     } catch (error) {
         console.error('Error loading settings:', error);
         // Use default settings
@@ -148,7 +157,7 @@ function applySettings() {
 /**
  * Save notification settings
  */
-function saveNotificationSettings() {
+async function saveNotificationSettings() {
     try {
         currentSettings.notifications = {
             workoutReminders: document.getElementById('workoutReminders').checked,
@@ -158,8 +167,8 @@ function saveNotificationSettings() {
             emailNotifications: document.getElementById('emailNotifications').checked,
             gymStatusUpdates: document.getElementById('gymStatusUpdates').checked
         };
-        
-        saveSettings();
+
+        await saveSettings();
         showToast('Notification settings saved successfully!', 'success');
     } catch (error) {
         console.error('Error saving notification settings:', error);
@@ -170,15 +179,15 @@ function saveNotificationSettings() {
 /**
  * Save privacy settings
  */
-function savePrivacySettings() {
+async function savePrivacySettings() {
     try {
         currentSettings.privacy = {
             publicProfile: document.getElementById('publicProfile').checked,
             showWorkoutHistory: document.getElementById('showWorkoutHistory').checked,
             shareAnonymizedData: document.getElementById('shareAnonymizedData').checked
         };
-        
-        saveSettings();
+
+        await saveSettings();
         showToast('Privacy settings saved successfully!', 'success');
     } catch (error) {
         console.error('Error saving privacy settings:', error);
@@ -189,7 +198,7 @@ function savePrivacySettings() {
 /**
  * Save preferences
  */
-function savePreferences() {
+async function savePreferences() {
     try {
         currentSettings.preferences = {
             theme: document.getElementById('themeSelect').value,
@@ -199,8 +208,8 @@ function savePreferences() {
             workoutDuration: document.getElementById('workoutDurationSelect').value,
             workoutIntensity: document.getElementById('workoutIntensitySelect').value
         };
-        
-        saveSettings();
+
+        await saveSettings();
         
         // Apply theme if changed
         applyTheme(currentSettings.preferences.theme);
@@ -213,13 +222,19 @@ function savePreferences() {
 }
 
 /**
- * Save settings to localStorage
+ * Save settings to localStorage and backend
  */
-function saveSettings() {
+async function saveSettings() {
     try {
         localStorage.setItem('userSettings', JSON.stringify(currentSettings));
+        
+        // Sync to backend real time
+        await api.updateUserSettings({
+            dark_mode: currentSettings.preferences.theme === 'dark',
+            receive_notifications: currentSettings.notifications.emailNotifications
+        });
     } catch (error) {
-        console.error('Error saving to localStorage:', error);
+        console.error('Error saving settings:', error);
         throw error;
     }
 }

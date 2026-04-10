@@ -67,3 +67,4 @@ class PasswordChange(BaseModel):
     """Schema for password change"""
     current_password: str
     new_password: str = Field(..., min_length=6)
+

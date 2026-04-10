@@ -99,6 +99,7 @@ async function loadWorkouts(filters = {}) {
             <div style="text-align: center; padding: 3rem; color: #dc2626;">
                 <i class="fas fa-exclamation-circle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
                 <p>Failed to load workouts. Please try again.</p>
+                <p style="font-size: 0.8rem; margin-top: 1rem; color: #ef4444; opacity: 0.8;">Debug: ${error.message}</p>
             </div>
         `;
     }

@@ -9,6 +9,7 @@ from app.models.diet_plan import DietPlan, DietPreferences
 from app.models.gym_status import GymStatus, Announcement
 from app.models.chat_history import ChatHistory
 from app.models.notification import Notification
+from app.models.user_settings import UserSettings
 
 __all__ = [
     "User",
@@ -21,5 +22,6 @@ __all__ = [
     "GymStatus",
     "Announcement",
     "ChatHistory",
-    "Notification"
+    "Notification",
+    "UserSettings"
 ]
