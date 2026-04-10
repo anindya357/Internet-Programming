@@ -405,6 +405,7 @@ async function openEditEquipmentModal(id) {
             modal.classList.add('active');
         }
     } catch (error) {
+        console.error('Edit equipment error:', error);
         showNotification('Failed to load equipment details', 'error');
         currentEditEquipmentId = null;
     }

@@ -306,7 +306,7 @@ const api = {
     },
     
     async getEquipmentById(id) {
-        return await apiRequest(`${API_ENDPOINTS.equipment}/${id}`);
+        return await apiRequest(`${API_ENDPOINTS.equipment}${id}`);
     },
     
     async getEquipmentCategories() {
