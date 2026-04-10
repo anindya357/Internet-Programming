@@ -457,3 +457,41 @@ select:focus {
         padding-top: 60px;
     }
 }
+
+/* Dark Theme Gym-Theme Overrides */
+body.dark-theme,
+body.dark-theme main {
+    background: #0f172a !important;
+}
+
+body.dark-theme header,
+body.dark-theme .navbar {
+    background: #000000 !important;
+}
+
+body.dark-theme .sidebar {
+    background: #1e293b !important;
+}
+
+/* Fixes for dark mode in gym-theme layout specifically */
+body.dark-theme .navbar { box-shadow: 0 2px 8px rgba(255, 255, 255, 0.05) !important; border-bottom: 1px solid var(--border-color); }
+body.dark-theme .card, body.dark-theme .dashboard-card { background: #1e293b !important; color: var(--text-dark) !important; border: 1px solid var(--border-color); }
+body.dark-theme .equipment-card, body.dark-theme .profile-card { background: #1e293b !important; border: 1px solid var(--border-color); }
+body.dark-theme .stat-card { background: #1e293b !important; }
+body.dark-theme .table-container { background: #1e293b !important; }
+body.dark-theme .modal-content { background: #1e293b !important; }
+body.dark-theme .form-container, body.dark-theme .login-container { background: #1e293b !important; box-shadow: 0 4px 6px rgba(0,0,0,0.5); }
+body.dark-theme a.btn-text { color: var(--primary-color); }
+body.dark-theme a.btn-text:hover { color: var(--primary-dark); }
+
+/* Fixes for dark mode in gym-theme layout specifically */
+body.dark-theme .navbar { box-shadow: 0 2px 8px rgba(255, 255, 255, 0.05) !important; border-bottom: 1px solid var(--border-color); }
+body.dark-theme .card, body.dark-theme .dashboard-card { background: #1e293b !important; color: var(--text-dark) !important; border: 1px solid var(--border-color); }
+body.dark-theme .equipment-card, body.dark-theme .profile-card { background: #1e293b !important; border: 1px solid var(--border-color); }
+body.dark-theme .stat-card { background: #1e293b !important; }
+body.dark-theme .table-container { background: #1e293b !important; }
+body.dark-theme .modal-content { background: #1e293b !important; }
+body.dark-theme .form-container, body.dark-theme .login-container { background: #1e293b !important; box-shadow: 0 4px 6px rgba(0,0,0,0.5); }
+body.dark-theme a.btn-text { color: var(--primary-color); }
+body.dark-theme a.btn-text:hover { color: var(--primary-dark); }
+

@@ -1,8 +1,10 @@
-// ===========================
+﻿// ===========================
 // Main JavaScript Functions
 // ===========================
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize theme
+    initTheme();
     // Check authentication
     checkAuth();
     
@@ -147,4 +149,17 @@ function formatTime(date) {
         minute: '2-digit',
         hour12: true
     });
+}
+
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+    } else if (savedTheme === 'auto') {
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.body.classList.add('dark-theme');
+        }
+    } else if (!savedTheme) {
+        // Default to not dark, or check system
+    }
 }

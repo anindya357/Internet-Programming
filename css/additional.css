@@ -1921,3 +1921,8 @@
     font-weight: 500;
     border-top: 2px solid var(--border-color);
 }
+body.dark-theme .medical-form { background: #1e293b !important; border: 1px solid var(--border-color); }
+body.dark-theme .rules-container { background: #1e293b !important; }
+body.dark-theme .history-container { background: #1e293b !important; }
+body.dark-theme .form-section { border-color: var(--border-color); }
+

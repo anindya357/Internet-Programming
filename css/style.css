@@ -1,4 +1,4 @@
-/* ===========================
+﻿/* ===========================
    FitTrack CUET - Main Styles
    =========================== */
 
@@ -1473,4 +1473,401 @@ img {
     .quick-actions .btn {
         width: 100%;
     }
+}
+
+/* Dark Theme Specific Styles */
+body.dark-theme {
+    --bg-white: #1e293b;
+    --bg-light: #0f172a;
+    --bg-gray: #334155;
+    --text-dark: #f8fafc;
+    --text-light: #cbd5e1;
+    --border-color: #334155;
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+}
+
+body.dark-theme .login-container,
+body.dark-theme .dashboard-card,
+body.dark-theme .card,
+body.dark-theme .settings-section,
+body.dark-theme .equipment-card,
+body.dark-theme .profile-card,
+body.dark-theme .table-container,
+body.dark-theme .modal-content,
+body.dark-theme .workout-card {
+    background: var(--bg-white) !important;
+    border-color: var(--border-color);
+    color: var(--text-dark) !important;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+body.dark-theme p, 
+body.dark-theme span:not(.badge):not(.btn-text), 
+body.dark-theme label, 
+body.dark-theme input,
+body.dark-theme select,
+body.dark-theme textarea,
+body.dark-theme h1, 
+body.dark-theme h2, 
+body.dark-theme h3, 
+body.dark-theme h4, 
+body.dark-theme h5, 
+body.dark-theme h6,
+body.dark-theme li,
+body.dark-theme td,
+body.dark-theme th,
+body.dark-theme a:not(.btn):not(.nav-menu a):not(.nav-item) {
+    color: var(--text-dark);
+}
+
+body.dark-theme .text-light,
+body.dark-theme .text-muted {
+    color: var(--text-light) !important;
+}
+
+body.dark-theme input,
+body.dark-theme select,
+body.dark-theme textarea {
+    background-color: var(--bg-gray);
+    color: var(--text-dark);
+    border-color: var(--border-color);
+}
+
+body.dark-theme table th,
+body.dark-theme table td {
+    border-color: var(--border-color);
+    color: var(--text-dark);
+}
+
+body.dark-theme table th {
+    background-color: var(--bg-gray);
+}
+body.dark-theme table tr:hover {
+    background-color: rgba(255,255,255,0.05);
+}
+
+
+/* Comprehensive Dark Theme Overrides for All Pages */
+body.dark-theme .settings-info-box { background: rgba(33, 150, 243, 0.1) !important; border-color: #2196F3; color: var(--text-dark); }
+body.dark-theme .settings-info-box strong { color: var(--text-dark); }
+body.dark-theme .settings-info-box p { color: var(--text-light); }
+body.dark-theme .settings-option, body.dark-theme .settings-action-item { background: var(--bg-gray) !important; }
+body.dark-theme .toggle-slider { background-color: var(--border-color); }
+body.dark-theme input:checked + .toggle-slider { background-color: var(--primary-color); }
+body.dark-theme .card-header, body.dark-theme .modal-header, body.dark-theme .modal-footer { border-color: var(--border-color); background: var(--bg-gray) !important; }
+body.dark-theme .nav-menu a, body.dark-theme .nav-item { color: var(--text-light) !important; }
+body.dark-theme .nav-menu a:hover, body.dark-theme .nav-menu a.active, body.dark-theme .nav-item.active { color: var(--text-dark) !important; background: rgba(255,255,255,0.05); }
+body.dark-theme .sidebar-menu a i { color: var(--text-light); }
+body.dark-theme .sidebar-menu a.active i { color: var(--text-dark); }
+body.dark-theme .stat-card { background: var(--bg-gray) !important; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+body.dark-theme .stat-icon { background: rgba(255,255,255,0.05); }
+body.dark-theme .notification-item.unread { background: rgba(40, 142, 179, 0.15) !important; }
+body.dark-theme .notification-item { background: var(--bg-gray) !important; border-color: var(--border-color); }
+body.dark-theme .success-alert { background: rgba(5, 150, 105, 0.15); color: #34d399; }
+body.dark-theme .error-alert { background: rgba(220, 38, 38, 0.15); color: #f87171; }
+body.dark-theme hr { border-color: var(--border-color); }
+body.dark-theme .activity-item, body.dark-theme .meal-card { background: var(--bg-gray) !important; border-color: var(--border-color); }
+body.dark-theme .btn-outline { border-color: var(--border-color); color: var(--text-dark); }
+body.dark-theme .btn-outline:hover { background: var(--bg-gray); }
+body.dark-theme .form-group label { color: var(--text-dark); }
+body.dark-theme table th, body.dark-theme table td { color: var(--text-dark); border-color: var(--border-color); }
+body.dark-theme table th { background: var(--bg-gray); }
+body.dark-theme tr:hover { background: rgba(255,255,255,0.05) !important; }
+body.dark-theme .text-muted, body.dark-theme .text-light, body.dark-theme span.text-sm { color: var(--text-light) !important; }
+
+/* ---- THE COMPLETE DARK THEME OVERRIDES ---- */
+body.dark-theme .main-content .container { background: var(--bg-gray) !important; color: var(--text-dark); border-color: var(--border-color); }
+body.dark-theme .stat-card, 
+body.dark-theme .card, 
+body.dark-theme .dashboard-card,
+body.dark-theme .status-card,
+body.dark-theme .equipment-card,
+body.dark-theme .profile-card,
+body.dark-theme .medical-form,
+body.dark-theme .history-container,
+body.dark-theme .rules-container,
+body.dark-theme .form-container,
+body.dark-theme .login-container,
+body.dark-theme .login-right,
+body.dark-theme .register-right,
+body.dark-theme .settings-sidebar,
+body.dark-theme .settings-main,
+body.dark-theme .table-container,
+body.dark-theme .modal-content,
+body.dark-theme .workout-card {
+    background: var(--bg-gray) !important;
+    border-color: var(--border-color) !important;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3) !important;
+}
+
+body.dark-theme .activity-item,
+body.dark-theme .workout-item,
+body.dark-theme .meal-card {
+    background: var(--bg-white) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* Dropdowns */
+body.dark-theme .dropdown-menu {
+    background: var(--bg-gray) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+}
+body.dark-theme .dropdown-menu a:hover {
+    background: var(--bg-white) !important;
+}
+
+/* Buttons / Actions / Form Elements */
+body.dark-theme .btn-secondary,
+body.dark-theme .btn-outline {
+    background: var(--bg-light) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-dark) !important;
+}
+body.dark-theme .btn-secondary:hover,
+body.dark-theme .btn-outline:hover {
+    background: var(--bg-white) !important;
+}
+
+/* Forms */
+body.dark-theme input:not([type="checkbox"]):not([type="radio"]),
+body.dark-theme select,
+body.dark-theme textarea {
+    background-color: var(--bg-white) !important;
+    color: var(--text-dark) !important;
+    border-color: var(--border-color) !important;
+}
+body.dark-theme input::placeholder,
+body.dark-theme textarea::placeholder {
+    color: var(--text-light) !important;
+}
+
+/* Ensure text contrast */
+body.dark-theme .text-muted,
+body.dark-theme .text-light,
+body.dark-theme .section-description,
+body.dark-theme .settings-info-box p,
+body.dark-theme .settings-action-item p {
+    color: var(--text-light) !important;
+}
+body.dark-theme h1, body.dark-theme h2, body.dark-theme h3,
+body.dark-theme h4, body.dark-theme h5, body.dark-theme h6,
+body.dark-theme strong, body.dark-theme label,
+body.dark-theme .settings-action-item strong,
+body.dark-theme th {
+    color: var(--text-dark) !important;
+}
+
+body.dark-theme, body.dark-theme main { background-color: var(--bg-light) !important; }
+
+body.dark-theme .message.ai {
+    background: var(--bg-gray) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-dark) !important;
+}
+
+body.dark-theme .motivational-banner {
+    background: var(--bg-gray) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-dark) !important;
+}
+
+body.dark-theme .auth-card {
+    background: var(--bg-gray) !important;
+}
+
+body.dark-theme .diet-day {
+    background: var(--bg-gray) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* --- Dark Mode Overrides for Equipment Detail Modal --- */
+body.dark-theme .equipment-detail-header {
+    border-bottom-color: var(--border-color);
+}
+body.dark-theme .equipment-tabs {
+    border-bottom-color: var(--border-color);
+}
+body.dark-theme .equipment-detail-footer {
+    border-top-color: var(--border-color);
+}
+body.dark-theme .equipment-detail-title h2,
+body.dark-theme .overview-section h3,
+body.dark-theme .overview-item strong,
+body.dark-theme .guidelines-content h3,
+body.dark-theme .benefits-content h3 {
+    color: var(--text-dark) !important;
+}
+body.dark-theme .equipment-tab,
+body.dark-theme .overview-section p,
+body.dark-theme .overview-item p,
+body.dark-theme .step-content {
+    color: var(--text-light) !important;
+}
+body.dark-theme .equipment-tab:hover,
+body.dark-theme .equipment-tab.active {
+    color: var(--primary-color) !important;
+}
+body.dark-theme .overview-item {
+    background: var(--bg-gray) !important;
+    border: 1px solid var(--border-color);
+}
+
+/* Adjust colorful warning/tip boxes for dark mode contrast */
+body.dark-theme .guidelines-tips {
+    background: rgba(245, 158, 11, 0.1) !important;
+    border-left-color: #f59e0b;
+}
+body.dark-theme .guidelines-tips h4,
+body.dark-theme .guidelines-tips li {
+    color: #fcd34d !important; /* brighter amber for dark bg */
+}
+
+body.dark-theme .benefit-item {
+    background: rgba(16, 185, 129, 0.1) !important; /* Greenish tint for dark bg */
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+body.dark-theme .benefit-item p {
+    color: #6ee7b7 !important; /* Brighter green text */
+}
+
+body.dark-theme .safety-warnings {
+    background: rgba(220, 38, 38, 0.1) !important;
+    border-left-color: #ef4444;
+}
+body.dark-theme .safety-warnings h3,
+body.dark-theme .safety-warnings li {
+    color: #fca5a5 !important; /* Brighter red text */
+}
+
+body.dark-theme .dos {
+    background: rgba(16, 185, 129, 0.1) !important;
+    border-left-color: #10b981;
+}
+body.dark-theme .dos h4,
+body.dark-theme .dos li {
+    color: #6ee7b7 !important;
+}
+
+body.dark-theme .donts {
+    background: rgba(220, 38, 38, 0.1) !important;
+    border-left-color: #ef4444;
+}
+body.dark-theme .donts h4,
+body.dark-theme .donts li {
+    color: #fca5a5 !important;
+}
+
+body.dark-theme .equipment-category-badge {
+    background: rgba(30, 64, 175, 0.2) !important;
+    color: #93c5fd !important; /* Brighter blue */
+}
+
+/* --- Dark Mode Overrides for Equipment Detail Modal --- */
+body.dark-theme .equipment-detail-header {
+    border-bottom-color: var(--border-color);
+}
+body.dark-theme .equipment-tabs {
+    border-bottom-color: var(--border-color);
+}
+body.dark-theme .equipment-detail-footer {
+    border-top-color: var(--border-color);
+}
+body.dark-theme .equipment-detail-title h2,
+body.dark-theme .overview-section h3,
+body.dark-theme .overview-item strong,
+body.dark-theme .guidelines-content h3,
+body.dark-theme .benefits-content h3 {
+    color: var(--text-dark) !important;
+}
+body.dark-theme .equipment-tab,
+body.dark-theme .overview-section p,
+body.dark-theme .overview-item p,
+body.dark-theme .step-content {
+    color: var(--text-light) !important;
+}
+body.dark-theme .equipment-tab:hover,
+body.dark-theme .equipment-tab.active {
+    color: var(--primary-color) !important;
+}
+body.dark-theme .overview-item {
+    background: var(--bg-gray) !important;
+    border: 1px solid var(--border-color);
+}
+
+/* Adjust colorful warning/tip boxes for dark mode contrast */
+body.dark-theme .guidelines-tips {
+    background: rgba(245, 158, 11, 0.1) !important;
+    border-left-color: #f59e0b;
+}
+body.dark-theme .guidelines-tips h4,
+body.dark-theme .guidelines-tips li {
+    color: #fcd34d !important; /* brighter amber for dark bg */
+}
+
+body.dark-theme .benefit-item {
+    background: rgba(16, 185, 129, 0.1) !important; /* Greenish tint for dark bg */
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+body.dark-theme .benefit-item p {
+    color: #6ee7b7 !important; /* Brighter green text */
+}
+
+body.dark-theme .safety-warnings {
+    background: rgba(220, 38, 38, 0.1) !important;
+    border-left-color: #ef4444;
+}
+body.dark-theme .safety-warnings h3,
+body.dark-theme .safety-warnings li {
+    color: #fca5a5 !important; /* Brighter red text */
+}
+
+body.dark-theme .dos {
+    background: rgba(16, 185, 129, 0.1) !important;
+    border-left-color: #10b981;
+}
+body.dark-theme .dos h4,
+body.dark-theme .dos li {
+    color: #6ee7b7 !important;
+}
+
+body.dark-theme .donts {
+    background: rgba(220, 38, 38, 0.1) !important;
+    border-left-color: #ef4444;
+}
+body.dark-theme .donts h4,
+body.dark-theme .donts li {
+    color: #fca5a5 !important;
+}
+
+body.dark-theme .equipment-category-badge {
+    background: rgba(30, 64, 175, 0.2) !important;
+    color: #93c5fd !important; /* Brighter blue */
+}
+
+
+/* Equipment Modal Dynamic JS Overrides for Dark Mode */
+body.dark-theme {
+    --bg-card: #1e293b;
+    --text-color: #f8fafc;
+    --bg-hover: #0f172a;
+    --border-color: #334155;
+}
+
+body.dark-theme .modal-content-box {
+    background: var(--bg-card) !important;
+    color: var(--text-color) !important;
+}
+
+body.dark-theme .modal-content-box [style*="color: #6c757d"],
+body.dark-theme .modal-content-box [style*="color:#6c757d"] {
+    color: #94a3b8 !important; /* Muted gray for dark mode */
+}
+
+body.dark-theme .modal-content-box [style*="background: #dee2e6"] {
+    background: #334155 !important; /* Dark mode divider */
+}
+
+body.dark-theme .modal-content-box strong {
+    color: #e2e8f0 !important;
 }

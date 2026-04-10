@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Settings Page JavaScript
  * Handles user preferences, notifications, privacy settings, and data management
  */
@@ -31,7 +31,7 @@ let currentSettings = {
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     // Check authentication
-    if (!isLoggedIn()) {
+    if (!localStorage.getItem('isLoggedIn')) {
         window.location.href = 'index.html';
         return;
     }
@@ -118,27 +118,32 @@ function loadSettings() {
  * Apply settings to UI elements
  */
 function applySettings() {
-    // Notifications
-    document.getElementById('workoutReminders').checked = currentSettings.notifications.workoutReminders;
-    document.getElementById('achievementAlerts').checked = currentSettings.notifications.achievementAlerts;
-    document.getElementById('dietUpdates').checked = currentSettings.notifications.dietUpdates;
-    document.getElementById('medicalReminders').checked = currentSettings.notifications.medicalReminders;
-    document.getElementById('emailNotifications').checked = currentSettings.notifications.emailNotifications;
-    document.getElementById('gymStatusUpdates').checked = currentSettings.notifications.gymStatusUpdates;
-    
-    // Privacy
-    document.getElementById('publicProfile').checked = currentSettings.privacy.publicProfile;
-    document.getElementById('showWorkoutHistory').checked = currentSettings.privacy.showWorkoutHistory;
-    document.getElementById('shareAnonymizedData').checked = currentSettings.privacy.shareAnonymizedData;
-    
-    // Preferences
-    document.getElementById('themeSelect').value = currentSettings.preferences.theme;
-    document.getElementById('languageSelect').value = currentSettings.preferences.language;
-    document.getElementById('timeFormatSelect').value = currentSettings.preferences.timeFormat;
-    document.getElementById('dateFormatSelect').value = currentSettings.preferences.dateFormat;
-    document.getElementById('workoutDurationSelect').value = currentSettings.preferences.workoutDuration;
-    document.getElementById('workoutIntensitySelect').value = currentSettings.preferences.workoutIntensity;
+    try {
+      // Notifications
+      document.getElementById('workoutReminders').checked = currentSettings.notifications.workoutReminders;
+      document.getElementById('achievementAlerts').checked = currentSettings.notifications.achievementAlerts;
+      document.getElementById('dietUpdates').checked = currentSettings.notifications.dietUpdates;
+      document.getElementById('medicalReminders').checked = currentSettings.notifications.medicalReminders;
+      document.getElementById('emailNotifications').checked = currentSettings.notifications.emailNotifications;
+      document.getElementById('gymStatusUpdates').checked = currentSettings.notifications.gymStatusUpdates;
+
+      // Privacy
+      document.getElementById('publicProfile').checked = currentSettings.privacy.publicProfile;
+      document.getElementById('showWorkoutHistory').checked = currentSettings.privacy.showWorkoutHistory;
+      document.getElementById('shareAnonymizedData').checked = currentSettings.privacy.shareAnonymizedData;
+
+      // Preferences
+      document.getElementById('themeSelect').value = currentSettings.preferences.theme;
+      document.getElementById('languageSelect').value = currentSettings.preferences.language;
+      document.getElementById('timeFormatSelect').value = currentSettings.preferences.timeFormat;
+      document.getElementById('dateFormatSelect').value = currentSettings.preferences.dateFormat;
+      document.getElementById('workoutDurationSelect').value = currentSettings.preferences.workoutDuration;
+      document.getElementById('workoutIntensitySelect').value = currentSettings.preferences.workoutIntensity;
+    } catch (e) {
+        console.error('Error applying settings:', e);
+    }
 }
+
 
 /**
  * Save notification settings
@@ -227,18 +232,18 @@ function applyTheme(theme) {
     
     if (theme === 'dark') {
         body.classList.add('dark-theme');
-        showToast('Dark theme will be available in a future update', 'info');
+        localStorage.setItem('theme', 'dark');
     } else if (theme === 'light') {
         body.classList.remove('dark-theme');
+        localStorage.setItem('theme', 'light');
     } else if (theme === 'auto') {
-        // Check system preference
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         if (prefersDark) {
             body.classList.add('dark-theme');
         } else {
             body.classList.remove('dark-theme');
         }
-        showToast('Auto theme will follow your system preferences (Coming soon)', 'info');
+        localStorage.setItem('theme', 'auto');
     }
 }
 
@@ -407,3 +412,6 @@ function showToast(message, type = 'info') {
         toast.classList.remove('show');
     }, 3000);
 }
+    
+
+
