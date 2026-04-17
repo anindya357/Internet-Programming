@@ -459,9 +459,10 @@ const api = {
 
     async deleteNotification(id) {
         return await apiRequest(`${API_ENDPOINTS.notifications}${id}`, {
+            method: 'DELETE'
         });
     },
-    
+
     async deleteAllNotifications() {
         return await apiRequest(API_ENDPOINTS.notifications, {
             method: 'DELETE'
@@ -476,3 +477,4 @@ window.isLoggedIn = isLoggedIn;
 window.getUserData = getUserData;
 window.setUserData = setUserData;
 window.removeAuthToken = removeAuthToken;
+

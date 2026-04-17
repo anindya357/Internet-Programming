@@ -54,9 +54,8 @@ async function handleLogin(e) {
             console.error('Failed to load user settings:', settingsError);
         }
 
-        setTimeout(() => {
-            window.location.href = 'dashboard.html';
-        }, 800);
+        // Changed timeout from 800 to just immediately redirect to dashboard since there's no reason to wait
+        window.location.href = 'dashboard.html';
     } catch (error) {
         showNotification(error.message || 'Login failed. Please try again.', 'error');
         submitBtn.disabled = false;

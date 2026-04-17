@@ -52,9 +52,89 @@ async function loadDashboardData() {
         // Load announcements
         const announcements = await api.getAnnouncements({ limit: 5 });
         updateAnnouncements(announcements);
-        
+
+        // Load progress stats
+        await loadProgressStats();
+
     } catch (error) {
         console.error('Error loading dashboard data:', error);
+    }
+}
+
+async function loadProgressStats() {
+    try {
+        const response = await api.getWorkouts({ limit: 1000 });
+        const workouts = response.workouts || [];
+        
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+        
+        let totalWorkouts = workouts.length;
+        let monthWorkouts = 0;
+        let totalDuration = 0;
+        
+        // Use a set to track unique workout dates (YYYY-MM-DD)
+        const workoutDates = new Set();
+        
+        workouts.forEach(w => {
+            // Compute this month's workouts and total time
+            const wDate = new Date(w.created_at);
+            if (wDate.getMonth() === currentMonth && wDate.getFullYear() === currentYear) {
+                monthWorkouts++;
+            }
+            
+            totalDuration += (w.duration || 0);
+            
+            // Add to dates set for streak calculation using local timezone
+            workoutDates.add(wDate.toLocaleDateString('en-CA'));
+        });
+        
+        // Calculate Streak
+        let dayStreak = 0;
+        let checkDate = new Date();
+        
+        while (true) {
+            const dateString = checkDate.toLocaleDateString('en-CA');
+            
+            if (workoutDates.has(dateString)) {
+                dayStreak++;
+                checkDate.setDate(checkDate.getDate() - 1);
+            } else if (dayStreak === 0 && checkDate.toDateString() === now.toDateString()) {
+                // If today has no workout yet, check yesterday
+                checkDate.setDate(checkDate.getDate() - 1);
+            } else {
+                break;
+            }
+        }
+        
+        // Calculate format for total time (e.g. "42h" or "1h 30m" or "45m")
+        let timeString = '-';
+        if (totalDuration > 0) {
+            const hours = Math.floor(totalDuration / 60);
+            const minutes = totalDuration % 60;
+            if (hours > 0 && minutes > 0) {
+                timeString = `${hours}h ${minutes}m`;
+            } else if (hours > 0) {
+                timeString = `${hours}h`;
+            } else {
+                timeString = `${minutes}m`;
+            }
+        }
+        
+        // Update DOM
+        const elTotal = document.getElementById('stat-total-workouts');
+        const elMonth = document.getElementById('stat-month-workouts');
+        const elStreak = document.getElementById('stat-day-streak');
+        const elTime = document.getElementById('stat-total-time');
+        
+        if (elTotal) elTotal.textContent = totalWorkouts;
+        if (elMonth) elMonth.textContent = monthWorkouts;
+        if (elStreak) elStreak.textContent = dayStreak;
+        if (elTime) elTime.textContent = timeString || '-';
+        
+    } catch (err) {
+        console.error('Error loading progress stats:', err);
     }
 }
 
