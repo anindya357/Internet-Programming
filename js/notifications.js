@@ -369,7 +369,7 @@ function formatNotificationTime(timestamp) {
     } else if (days < 7) {
         return `${days}d ago`;
     } else {
-        return date.toLocaleDateString();
+        return formatDate(date);
     }
 }
 

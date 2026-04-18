@@ -3,6 +3,7 @@ Medical Profile API Endpoints
 """
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from typing import Optional
 
 from app.core.database import get_db
 from app.core.security import get_current_user
@@ -64,7 +65,7 @@ def calculate_daily_calories(weight: float, height: float, age: int, gender: str
     return int(bmr * multiplier)
 
 
-@router.get("/", response_model=MedicalProfileResponse)
+@router.get("/", response_model=Optional[MedicalProfileResponse])
 async def get_medical_profile(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
@@ -73,12 +74,6 @@ async def get_medical_profile(
     profile = db.query(MedicalProfile).filter(
         MedicalProfile.user_id == current_user.id
     ).first()
-    
-    if not profile:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Medical profile not found. Please create one."
-        )
     
     return profile
 
@@ -164,7 +159,7 @@ async def delete_medical_profile(
     return {"message": "Medical profile deleted successfully"}
 
 
-@router.get("/health-metrics", response_model=HealthMetrics)
+@router.get("/health-metrics", response_model=Optional[HealthMetrics])
 async def get_health_metrics(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
@@ -173,12 +168,9 @@ async def get_health_metrics(
     profile = db.query(MedicalProfile).filter(
         MedicalProfile.user_id == current_user.id
     ).first()
-    
+
     if not profile:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Medical profile not found"
-        )
+        return None
     
     bmi, bmi_category = calculate_bmi(profile.weight, profile.height)
     

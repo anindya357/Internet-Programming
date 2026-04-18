@@ -133,21 +133,57 @@ function showNotification(message, type = 'info') {
     }, 3000);
 }
 
+// Utility function to get current user preferences securely
+function getUserPreferences() {
+    try {
+        const savedSettings = localStorage.getItem('userSettings');
+        if (savedSettings) {
+            const parsed = JSON.parse(savedSettings);
+            if (parsed.preferences) {
+                return parsed.preferences;
+            }
+        }
+    } catch(e) {
+        console.error('Error fetching preferences:', e);
+    }
+    return {
+        timeFormat: '12',
+        dateFormat: 'MM/DD/YYYY',
+        workoutDuration: '60',
+        workoutIntensity: 'moderate'
+    };
+}
+
 // Utility function to format date
 function formatDate(date) {
-    return new Date(date).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-    });
+    const prefs = getUserPreferences();
+    const dt = new Date(date);
+    
+    const dd = String(dt.getDate()).padStart(2, '0');
+    const mm = String(dt.getMonth() + 1).padStart(2, '0');
+    const yyyy = dt.getFullYear();
+    
+    if (prefs.dateFormat === 'DD/MM/YYYY') {
+        return `${dd}/${mm}/${yyyy}`;
+    } else if (prefs.dateFormat === 'YYYY-MM-DD') {
+        return `${yyyy}-${mm}-${dd}`;
+    } else {
+        // default MM/DD/YYYY
+        return `${mm}/${dd}/${yyyy}`;
+    }
 }
 
 // Utility function to format time
 function formatTime(date) {
-    return new Date(date).toLocaleTimeString('en-US', {
+    const prefs = getUserPreferences();
+    const dt = new Date(date);
+    
+    const hour12 = prefs.timeFormat !== '24';
+    
+    return dt.toLocaleTimeString('en-US', {
         hour: 'numeric',
         minute: '2-digit',
-        hour12: true
+        hour12: hour12
     });
 }
 

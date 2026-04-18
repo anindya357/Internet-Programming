@@ -154,8 +154,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const statusClass = eq.status === 'Available' || eq.status === 'available' ? 'status-available' : 'status-maintenance';
         
         // Format dates if available
-        const lastMaint = eq.last_maintenance && eq.last_maintenance !== 'N/A' ? new Date(eq.last_maintenance).toLocaleDateString() : 'N/A';
-        const nextMaint = eq.next_maintenance && eq.next_maintenance !== 'N/A' ? new Date(eq.next_maintenance).toLocaleDateString() : 'N/A';
+        const lastMaint = eq.last_maintenance && eq.last_maintenance !== 'N/A' ? formatDate(eq.last_maintenance) : 'N/A';
+        const nextMaint = eq.next_maintenance && eq.next_maintenance !== 'N/A' ? formatDate(eq.next_maintenance) : 'N/A';
 
         modal.innerHTML = `
             <div style="background: var(--bg-card, #fff); color: var(--text-color, #333); width: 100%; max-width: 900px; max-height: 90vh; overflow-y: auto; border-radius: 16px; padding: 0; position: relative; box-shadow: 0 15px 40px rgba(0,0,0,0.3); transform: scale(0.95); transition: transform 0.3s ease;" class="modal-content-box">

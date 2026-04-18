@@ -117,25 +117,15 @@ async function handleRegister(e) {
         };
         
         // Call backend API
-        await api.register(userData);
+        const responseData = await api.register(userData);
         
-        // Fetch user settings and apply theme
-        try {
-            const settings = await api.getUserSettings();
-            const theme = settings.dark_mode ? 'dark' : 'light';
-            localStorage.setItem('theme', theme);
-            if (theme === 'dark') {
-                document.body.classList.add('dark-theme');
-            } else {
-                document.body.classList.remove('dark-theme');
-            }
-        } catch (settingsError) {
-            console.error('Failed to load user settings:', settingsError);
-        }
-
+        showNotification(responseData.message || 'Registration successful! Please check your email to verify your account.', 'success');
+        submitBtn.innerHTML = 'Account Created <i class="fas fa-check"></i>';
+        
         setTimeout(() => {
-            window.location.href = 'dashboard.html';
-        }, 1500);
+            // Redirect to login page to let them verify
+            window.location.href = 'index.html';
+        }, 3000);
     } catch (error) {
         showNotification(error.message || 'Registration failed. Please try again.', 'error');
         submitBtn.disabled = false;

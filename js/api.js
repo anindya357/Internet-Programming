@@ -57,10 +57,7 @@ function setAuthToken(token) {
 
 // Remove auth token from localStorage
 function removeAuthToken() {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userData');
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('theme');
+    localStorage.clear(); // Complete wipe for security and data isolation
 }
 
 // Check if user is logged in
@@ -141,6 +138,9 @@ async function apiRequest(url, options = {}) {
 const api = {
     // Auth
     async login(studentId, password) {
+        // Clear old session's local storage data securely before starting a new session
+        localStorage.clear();
+        
         const response = await apiRequest(API_ENDPOINTS.login, {
             method: 'POST',
             body: JSON.stringify({ student_id: studentId, password: password })
@@ -153,14 +153,15 @@ const api = {
     },
     
     async register(userData) {
+        // Clear old session's local storage data securely
+        localStorage.clear();
+        
         const response = await apiRequest(API_ENDPOINTS.register, {
             method: 'POST',
             body: JSON.stringify(userData)
         });
         
-        setAuthToken(response.access_token);
-        setUserData(response.user);
-        
+        // No longer setting auth token automatically as email verification is required.
         return response;
     },
     
@@ -268,7 +269,13 @@ const api = {
             body: JSON.stringify(dietData)
         });
     },
-    
+
+    async generateDietPlan() {
+        return await apiRequest(`${API_ENDPOINTS.diet}generate`, {
+            method: 'POST'
+        });
+    },
+
     async deleteDietPlan() {
         return await apiRequest(API_ENDPOINTS.diet, {
             method: 'DELETE'

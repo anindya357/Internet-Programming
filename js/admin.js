@@ -209,7 +209,7 @@ async function loadEquipmentList() {
             const status = item.is_available ? 'Available' : (item.needs_maintenance ? 'Maintenance' : 'In Use');
             const statusClass = item.is_available ? 'available' : (item.needs_maintenance ? 'maintenance' : 'in-use');
             const lastMaintenance = item.last_maintenance_date ? 
-                new Date(item.last_maintenance_date).toLocaleDateString() : 'N/A';
+                formatDate(item.last_maintenance_date) : 'N/A';
             
             return `
                 <tr>
@@ -248,7 +248,7 @@ function updateAnnouncementsDisplay(data) {
         <div class="announcement-item">
             <div class="announcement-header">
                 <span class="announcement-priority ${a.priority || 'normal'}">${a.priority || 'normal'}</span>
-                <span class="announcement-date">${new Date(a.created_at).toLocaleDateString()}</span>
+                <span class="announcement-date">${formatDate(a.created_at)}</span>
                 <button class="btn-icon" onclick="deleteAnnouncement(${a.id})"><i class="fas fa-trash"></i></button>
             </div>
             <h4>${a.title}</h4>

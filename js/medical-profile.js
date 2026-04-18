@@ -21,14 +21,11 @@ document.addEventListener('DOMContentLoaded', function() {
 async function loadMedicalProfile() {
     try {
         currentMedicalProfile = await api.getMedicalProfile();
-        populateForm(currentMedicalProfile);
-    } catch (error) {
-        // Profile might not exist yet, try localStorage fallback
-        const savedProfile = localStorage.getItem('medicalProfile');
-        if (savedProfile) {
-            const profile = JSON.parse(savedProfile);
-            populateFormFromLocal(profile);
+        if (currentMedicalProfile) {
+            populateForm(currentMedicalProfile);
         }
+    } catch (error) {
+        console.error('Failed to load medical profile:', error);
     }
 }
 

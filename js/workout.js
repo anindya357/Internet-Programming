@@ -227,6 +227,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const workoutForm = document.getElementById('workoutForm');
     
     if (workoutForm) {
+        // Pre-fill form from user preferences when opening it
+        const logWorkoutModalBtn = document.querySelector('[onclick*="logWorkoutModal"]'); 
+        // Just prefill immediately since the form is on the dom
+        const prefs = window.getUserPreferences ? window.getUserPreferences() : {workoutDuration: '60', workoutIntensity: 'moderate'};
+        const durationInput = document.getElementById('duration');
+        if (durationInput && (!durationInput.value || durationInput.value === '')) {
+            durationInput.value = prefs.workoutDuration || '60';
+        }
+        
+        let intensityRb = document.getElementById('intensity' + (prefs.workoutIntensity ? prefs.workoutIntensity.charAt(0).toUpperCase() + prefs.workoutIntensity.slice(1) : 'Moderate'));
+        if(!intensityRb) intensityRb = document.querySelector(`input[name="intensity"][value="${prefs.workoutIntensity}"]`)
+        if (intensityRb) {
+            intensityRb.checked = true;
+        }
+
         workoutForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             

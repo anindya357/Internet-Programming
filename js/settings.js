@@ -110,6 +110,11 @@ async function loadSettings() {
         if (backendSettings) {
             currentSettings.preferences.theme = backendSettings.dark_mode ? 'dark' : 'light';
             currentSettings.notifications.emailNotifications = backendSettings.receive_notifications;
+            if (backendSettings.time_format) currentSettings.preferences.timeFormat = backendSettings.time_format;
+            if (backendSettings.date_format) currentSettings.preferences.dateFormat = backendSettings.date_format;
+            if (backendSettings.workout_duration) currentSettings.preferences.workoutDuration = backendSettings.workout_duration.toString();
+            if (backendSettings.workout_intensity) currentSettings.preferences.workoutIntensity = backendSettings.workout_intensity;
+            
             localStorage.setItem('userSettings', JSON.stringify(currentSettings));
         }
 
@@ -129,25 +134,24 @@ async function loadSettings() {
 function applySettings() {
     try {
       // Notifications
-      document.getElementById('workoutReminders').checked = currentSettings.notifications.workoutReminders;
-      document.getElementById('achievementAlerts').checked = currentSettings.notifications.achievementAlerts;
-      document.getElementById('dietUpdates').checked = currentSettings.notifications.dietUpdates;
-      document.getElementById('medicalReminders').checked = currentSettings.notifications.medicalReminders;
-      document.getElementById('emailNotifications').checked = currentSettings.notifications.emailNotifications;
-      document.getElementById('gymStatusUpdates').checked = currentSettings.notifications.gymStatusUpdates;
+      if (document.getElementById('workoutReminders')) document.getElementById('workoutReminders').checked = currentSettings.notifications.workoutReminders;
+      if (document.getElementById('achievementAlerts')) document.getElementById('achievementAlerts').checked = currentSettings.notifications.achievementAlerts;
+      if (document.getElementById('dietUpdates')) document.getElementById('dietUpdates').checked = currentSettings.notifications.dietUpdates;
+      if (document.getElementById('medicalReminders')) document.getElementById('medicalReminders').checked = currentSettings.notifications.medicalReminders;
+      if (document.getElementById('emailNotifications')) document.getElementById('emailNotifications').checked = currentSettings.notifications.emailNotifications;
+      if (document.getElementById('gymStatusUpdates')) document.getElementById('gymStatusUpdates').checked = currentSettings.notifications.gymStatusUpdates;
 
       // Privacy
-      document.getElementById('publicProfile').checked = currentSettings.privacy.publicProfile;
-      document.getElementById('showWorkoutHistory').checked = currentSettings.privacy.showWorkoutHistory;
-      document.getElementById('shareAnonymizedData').checked = currentSettings.privacy.shareAnonymizedData;
+      if (document.getElementById('publicProfile')) document.getElementById('publicProfile').checked = currentSettings.privacy.publicProfile;
+      if (document.getElementById('showWorkoutHistory')) document.getElementById('showWorkoutHistory').checked = currentSettings.privacy.showWorkoutHistory;
+      if (document.getElementById('shareAnonymizedData')) document.getElementById('shareAnonymizedData').checked = currentSettings.privacy.shareAnonymizedData;
 
       // Preferences
-      document.getElementById('themeSelect').value = currentSettings.preferences.theme;
-      document.getElementById('languageSelect').value = currentSettings.preferences.language;
-      document.getElementById('timeFormatSelect').value = currentSettings.preferences.timeFormat;
-      document.getElementById('dateFormatSelect').value = currentSettings.preferences.dateFormat;
-      document.getElementById('workoutDurationSelect').value = currentSettings.preferences.workoutDuration;
-      document.getElementById('workoutIntensitySelect').value = currentSettings.preferences.workoutIntensity;
+      if (document.getElementById('themeSelect')) document.getElementById('themeSelect').value = currentSettings.preferences.theme;
+      if (document.getElementById('timeFormatSelect')) document.getElementById('timeFormatSelect').value = currentSettings.preferences.timeFormat;
+      if (document.getElementById('dateFormatSelect')) document.getElementById('dateFormatSelect').value = currentSettings.preferences.dateFormat;
+      if (document.getElementById('workoutDurationSelect')) document.getElementById('workoutDurationSelect').value = currentSettings.preferences.workoutDuration;
+      if (document.getElementById('workoutIntensitySelect')) document.getElementById('workoutIntensitySelect').value = currentSettings.preferences.workoutIntensity;
     } catch (e) {
         console.error('Error applying settings:', e);
     }
@@ -202,7 +206,6 @@ async function savePreferences() {
     try {
         currentSettings.preferences = {
             theme: document.getElementById('themeSelect').value,
-            language: document.getElementById('languageSelect').value,
             timeFormat: document.getElementById('timeFormatSelect').value,
             dateFormat: document.getElementById('dateFormatSelect').value,
             workoutDuration: document.getElementById('workoutDurationSelect').value,
@@ -231,7 +234,11 @@ async function saveSettings() {
         // Sync to backend real time
         await api.updateUserSettings({
             dark_mode: currentSettings.preferences.theme === 'dark',
-            receive_notifications: currentSettings.notifications.emailNotifications
+            receive_notifications: currentSettings.notifications.emailNotifications,
+            time_format: currentSettings.preferences.timeFormat,
+            date_format: currentSettings.preferences.dateFormat,
+            workout_duration: parseInt(currentSettings.preferences.workoutDuration),
+            workout_intensity: currentSettings.preferences.workoutIntensity
         });
     } catch (error) {
         console.error('Error saving settings:', error);

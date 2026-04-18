@@ -112,7 +112,7 @@ async function loadDietPlanFromAPI() {
 }
 
 function loadDietPreferences() {
-    // Try to load from API data first, then localStorage fallback
+    // Try to load from API data first
     if (currentDietPlan) {
         if (currentDietPlan.diet_type) {
             const dietTypeEl = document.getElementById('dietType');
@@ -175,27 +175,6 @@ function loadDietPreferences() {
         }
         return;
     }
-    
-    // Fallback to localStorage
-    const savedPrefs = localStorage.getItem('dietPreferences');
-    
-    if (savedPrefs) {
-        const prefs = JSON.parse(savedPrefs);
-        
-        if (prefs.dietType) document.getElementById('dietType').value = prefs.dietType;
-        if (prefs.mealsPerDay) document.getElementById('mealsPerDay').value = prefs.mealsPerDay;
-        if (prefs.targetCalories) document.getElementById('targetCalories').value = prefs.targetCalories;
-        if (prefs.foodDislikes) document.getElementById('foodDislikes').value = prefs.foodDislikes;
-        
-        if (prefs.restrictions) {
-            prefs.restrictions.forEach(restriction => {
-                const checkbox = document.querySelector(`input[name="restrictions"][value="${restriction}"]`);
-                if (checkbox) checkbox.checked = true;
-            });
-        }
-    }
-    
-    updateNutritionGoalsDisplay();
 }
 
 function updateNutritionGoalsDisplay() {
@@ -533,39 +512,30 @@ function loadDayPlan(day) {
 }
 
 async function generateDietPlan() {
-    showNotification('Generating personalized diet plan...', 'info');
+    const btn = document.querySelector('button[onclick="generateDietPlan()"]');
+    const originalContent = btn ? btn.innerHTML : null;
+    
+    if (btn) {
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating your personalized plan...';
+        btn.disabled = true;
+    }
+    showNotification('AI is calculating your ideal diet constraints...', 'info');
 
     try {
-        const mealFrequency = parseInt(document.getElementById('mealsPerDay').value || 5);
-        const targetCalories = parseInt(document.getElementById('targetCalories').value || 2500);
-        
-        const dietGoal = document.getElementById('dietGoal')?.value || 'maintenance';
-        const proteinTarget = parseFloat(document.getElementById('proteinTarget')?.value || 150);
-        const carbsTarget = parseFloat(document.getElementById('carbsTarget')?.value || 280);
-        const fatTarget = parseFloat(document.getElementById('fatTarget')?.value || 65);
-        const waterGoal = parseFloat(document.getElementById('waterGoal')?.value || 3.0);
-        
-        const manualMeals = getManualMeals(targetCalories, proteinTarget, carbsTarget, fatTarget);
-        const generatedMeals = manualMeals || generateMeals(targetCalories, mealFrequency, proteinTarget, carbsTarget, fatTarget);
-        
-        const dietType = document.getElementById('dietType').value || 'balanced';
-        const restrictions = Array.from(document.querySelectorAll('input[name="restrictions"]:checked')).map(cb => cb.value);
-        const foodDislikes = document.getElementById('foodDislikes')?.value || '';
-        
         const formData = {
-            diet_type: dietType,
-            goal: dietGoal,
-            meal_frequency: mealFrequency,
-            target_calories: targetCalories,
-            protein_target: proteinTarget,
-            carbs_target: carbsTarget,
-            fat_target: fatTarget,
-            water_goal: waterGoal,
+            diet_type: document.getElementById('dietType').value || 'balanced',
+            goal: document.getElementById('dietGoal')?.value || 'maintenance',
+            meal_frequency: parseInt(document.getElementById('mealsPerDay').value || 5),
+            target_calories: parseInt(document.getElementById('targetCalories').value || 2500),
+            protein_target: parseFloat(document.getElementById('proteinTarget')?.value || 150),
+            carbs_target: parseFloat(document.getElementById('carbsTarget')?.value || 280),
+            fat_target: parseFloat(document.getElementById('fatTarget')?.value || 65),
+            water_goal: parseFloat(document.getElementById('waterGoal')?.value || 3.0),
             preferences: {
-                restrictions: restrictions,
-                food_dislikes: foodDislikes
+                restrictions: Array.from(document.querySelectorAll('input[name="restrictions"]:checked')).map(cb => cb.value),
+                food_dislikes: document.getElementById('foodDislikes')?.value || ''
             },
-            meals: generatedMeals
+            meals: currentDietPlan ? currentDietPlan.meals : []
         };
 
         if (currentDietPlan) {
@@ -574,19 +544,27 @@ async function generateDietPlan() {
             currentDietPlan = await api.createDietPlan(formData);
         }
 
+        // Now call the AI endpoint
+        currentDietPlan = await api.generateDietPlan();
+
         loadMealPlan();
         updateNutritionGoalsDisplay();
-        
+
         // Try to reload current tab day to refresh macro numbers
         const activeTab = document.querySelector('.tab-btn.active');
         if (activeTab && activeTab.dataset.day) {
             loadDayPlan(activeTab.dataset.day);
         }
-        
-        showNotification('New diet plan successfully customized and saved!', 'success');
+
+        showNotification('Personalized AI diet plan generated successfully!', 'success');
     } catch (error) {
         console.error('Error generating plan:', error);
-        showNotification('Failed to save or generate plan.', 'error');
+        showNotification(error.message || 'Failed to generate AI diet plan.', 'error');
+    } finally {
+        if (btn && originalContent) {
+            btn.innerHTML = originalContent;
+            btn.disabled = false;
+        }
     }
 }
 

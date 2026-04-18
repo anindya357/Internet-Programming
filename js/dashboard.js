@@ -186,7 +186,7 @@ function updateAnnouncements(data) {
         <div class="announcement-item ${a.priority || 'normal'}">
             <div class="announcement-header">
                 <span class="announcement-title">${a.title}</span>
-                <span class="announcement-date">${new Date(a.created_at).toLocaleDateString()}</span>
+                <span class="announcement-date">${formatDate(a.created_at)}</span>
             </div>
             <p class="announcement-content">${a.content}</p>
         </div>
@@ -313,7 +313,7 @@ async function loadRecentActivity() {
 
         activityList.innerHTML = workouts.map(workout => {
             const date = new Date(workout.created_at);
-            const timeString = date.toLocaleDateString() + ' at ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const timeString = formatDate(date) + ' at ' + formatTime(date);
             
             // Choose color and icon based on workout type
             let color = 'blue';

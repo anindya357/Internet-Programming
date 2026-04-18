@@ -99,6 +99,64 @@ Please provide a helpful, accurate, and encouraging response."""
             else:
                 return f"I encountered an issue while processing your request. Please try again. Error: {error_msg}"
     
+    async def generate_personalized_diet_plan(self, medical_profile: dict, diet_prefs: dict) -> list:
+        """Generate a personalized diet plan in strict JSON format using Gemini AI"""
+        if not self.model:
+            raise ValueError("AI service is not configured.")
+            
+        system_prompt = """You are an expert AI nutritionist. Your task is to generate a personalized daily meal plan based on the user's medical and dietary information.
+You MUST respond with ONLY a valid JSON array of meal objects. No markdown formatting, no explanations, just the JSON array.
+
+The required JSON structure for the array is:
+[
+  {
+    "meal_type": "Breakfast",
+    "time": "08:00 AM",
+    "items": [
+      {
+        "name": "Oatmeal",
+        "portion": "1 cup",
+        "calories": 150,
+        "protein": 5.0,
+        "carbs": 27.0,
+        "fat": 3.0
+      }
+    ],
+    "total_calories": 150
+  }
+]
+"""
+        
+        prompt = f"""{system_prompt}
+
+User Medical Profile:
+{medical_profile}
+
+User Diet Preferences & Goals:
+{diet_prefs}
+
+Please generate a structured daily meal plan (matching the requested number of meals) that fits these constraints."""
+
+        try:
+            response = self.model.generate_content(prompt)
+            if response.text:
+                import json
+                text = response.text.strip()
+                # Clean up potential markdown code block markers
+                if text.startswith("```json"):
+                    text = text[7:]
+                if text.startswith("```"):
+                    text = text[3:]
+                if text.endswith("```"):
+                    text = text[:-3]
+                
+                return json.loads(text.strip())
+            else:
+                raise ValueError("Empty response from AI")
+        except Exception as e:
+            print(f"Error generating AI diet plan: {str(e)}")
+            raise e
+
     def get_quick_suggestions(self, context: Optional[str] = None) -> List[str]:
         """Get quick suggestion prompts based on context"""
         suggestions = {
@@ -136,90 +194,7 @@ Please provide a helpful, accurate, and encouraging response."""
         
         return suggestions.get(context, suggestions["general"])
     
-    async def generate_diet_plan(self, user_info: dict, diet_prefs: dict) -> dict:
-        """Generate a personalized diet plan using Gemini"""
-        if not self.model:
-            raise Exception("Gemini API is not configured properly.")
-
-        prompt = f"""
-You are an expert AI nutritionist. Create a personalized daily meal plan based on the following user profile and preferences.
-
-User Medical & Physical Profile:
-- Age: {user_info.get('age', 'N/A')}
-- Gender: {user_info.get('gender', 'N/A')}
-- Weight (kg): {user_info.get('weight', 'N/A')}
-- Height (cm): {user_info.get('height', 'N/A')}
-- Medical Conditions: {user_info.get('medical_conditions', 'None')}
-- Physical Limitations: {user_info.get('physical_limitations', 'None')}
-- Overall Fitness Goal: {user_info.get('fitness_goal', 'General Fitness')}
-
-User Diet Preferences:
-- Diet Type (e.g. Balanced, Keto): {diet_prefs.get('diet_type', 'Balanced')}
-- Goal: {diet_prefs.get('goal', 'Maintenance')}
-- Target Calories: {diet_prefs.get('target_calories', 'N/A')}
-- Meals per day: {diet_prefs.get('meal_frequency', 3)}
-
-Respond ONLY with a valid JSON object matching exactly this schema, with no markdown formatting or extra text. Use realistic portion sizes, calorie counts, and macros matching the goal.
-{{
-  "diet_type": "string",
-  "goal": "string",
-  "target_calories": integer,
-  "protein_target": float,
-  "carbs_target": float,
-  "fat_target": float,
-  "water_goal": float,
-  "meal_frequency": integer,
-  "meals": [
-    {{
-      "meal_type": "string (e.g. breakfast, lunch, dinner, snack)",
-      "time": "string (e.g. 08:00 AM)",
-      "items": [
-        {{"name": "string", "portion": "string", "calories": integer, "protein": float, "carbs": float, "fat": float}}
-      ],
-      "total_calories": integer
-    }}
-  ]
-}}
-"""
-        try:
-            try:
-                response = self.client.models.generate_content(
-                    model=self.model_name,
-                    contents=prompt
-                )
-            except Exception as initial_error:
-                if "quota" in str(initial_error).lower() or "429" in str(initial_error):
-                    # Try fallback models
-                    response = None
-                    for fallback in self.fallback_models:
-                        try:
-                            response = self.client.models.generate_content(
-                                model=fallback,
-                                contents=prompt
-                            )
-                            break
-                        except Exception:
-                            continue
-                    if not response:
-                        raise initial_error
-                else:
-                    raise initial_error
-                    
-            import json
-            import re
-            text = response.text
-            # Clean markdown code blocks from response
-            text = re.sub(r'```json\s*', '', text)
-            text = re.sub(r'```\s*', '', text)
-            return json.loads(text.strip())
-        except Exception as e:
-            import traceback
-            traceback.print_exc()
-            print(f"Error generating diet plan: {e}")
-            raise Exception("Failed to generate diet plan from AI")
-
-
-
+   
 
 # Singleton instance
 gemini_service = GeminiService()

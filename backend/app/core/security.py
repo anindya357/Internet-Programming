@@ -42,6 +42,13 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     return encoded_jwt
 
 
+def create_verification_token(email: str) -> str:
+    """Create a specific JWT token with a 24-hour expiration for email verification"""
+    expire = datetime.utcnow() + timedelta(hours=24)
+    to_encode = {"sub": email, "type": "verification", "exp": expire}
+    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+
+
 def decode_token(token: str) -> dict:
     """Decode and verify a JWT token"""
     try:

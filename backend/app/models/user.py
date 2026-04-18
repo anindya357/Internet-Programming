@@ -20,7 +20,8 @@ class User(Base):
     term = Column(String(50), nullable=True)
     phone = Column(String(20), nullable=True)
     profile_image = Column(Text, nullable=True)
-    
+    is_email_verified = Column(Boolean, default=False)
+
     is_active = Column(Boolean, default=True)
     is_admin = Column(Boolean, default=False)
     

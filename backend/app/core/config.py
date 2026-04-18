@@ -7,7 +7,7 @@ import psycopg2
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), '.env'))
 
 
 class Settings(BaseSettings):
@@ -41,6 +41,14 @@ class Settings(BaseSettings):
     
     # Gemini AI
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
+    
+    # SMTP Defaults
+    SMTP_SERVER: str = "smtp.gmail.com"
+    SMTP_PORT: int = 587
+    SMTP_USER: str = os.getenv("SMTP_USER", "")
+    SMTP_PASSWORD: str = os.getenv("SMTP_PASSWORD", "")
+    # Frontend URL for link generation
+    FRONTEND_URL: str = os.getenv("FRONTEND_URL", "http://127.0.0.1:5500")
     
     class Config:
         env_file = ".env"

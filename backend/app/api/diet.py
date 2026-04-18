@@ -3,12 +3,14 @@ Diet Plan API Endpoints
 """
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 
 from app.core.database import get_db
 from app.core.security import get_current_user
 from app.models.user import User
 from app.models.diet_plan import DietPlan, DietPreferences
+from app.models.medical_profile import MedicalProfile
+from app.services.gemini_service import gemini_service
 from app.schemas.diet_plan import (
     DietPlanCreate,
     DietPlanUpdate,
@@ -19,7 +21,7 @@ from app.schemas.diet_plan import (
 router = APIRouter(prefix="/api/diet", tags=["Diet Plan"])
 
 
-@router.get("/", response_model=DietPlanResponse)
+@router.get("/", response_model=Optional[DietPlanResponse])
 async def get_diet_plan(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
@@ -29,13 +31,63 @@ async def get_diet_plan(
         DietPlan.user_id == current_user.id
     ).first()
     
-    if not diet_plan:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Diet plan not found. Please create one."
-        )
-    
     return diet_plan
+
+
+@router.post("/generate", response_model=DietPlanResponse)
+async def generate_diet_plan(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Generate AI personalized diet plan"""
+    diet_plan = db.query(DietPlan).filter(DietPlan.user_id == current_user.id).first()
+    medical_profile = db.query(MedicalProfile).filter(MedicalProfile.user_id == current_user.id).first()
+    
+    if not diet_plan:
+        raise HTTPException(status_code=400, detail="Diet plan/preferences not set")
+        
+    med_info = {}
+    if medical_profile:
+        med_info = {
+            "age": medical_profile.age,
+            "gender": medical_profile.gender,
+            "height": medical_profile.height,
+            "weight": medical_profile.weight,
+            "blood_group": medical_profile.blood_group,
+            "conditions": medical_profile.medical_conditions,
+            "conditions_details": medical_profile.conditions_details,
+            "fitness_goal": medical_profile.fitness_goal,
+            "physical_limitations": medical_profile.physical_limitations
+        }
+        
+    diet_info = {
+        "diet_type": diet_plan.diet_type,
+        "goal": diet_plan.goal,
+        "target_calories": diet_plan.target_calories,
+        "protein_target": diet_plan.protein_target,
+        "carbs_target": diet_plan.carbs_target,
+        "fat_target": diet_plan.fat_target,
+        "meal_frequency": diet_plan.meal_frequency,
+        "preferences": diet_plan.preferences
+    }
+
+    try:
+        generated_meals = await gemini_service.generate_personalized_diet_plan(
+            medical_profile=med_info,
+            diet_prefs=diet_info
+        )
+        
+        # Save generated meals to DB
+        diet_plan.meals = generated_meals
+        db.commit()
+        db.refresh(diet_plan)
+        
+        return diet_plan
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate AI diet plan: {str(e)}"
+        )
 
 
 @router.post("/", response_model=DietPlanResponse, status_code=status.HTTP_201_CREATED)

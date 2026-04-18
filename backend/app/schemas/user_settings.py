@@ -7,6 +7,11 @@ class UserSettingsBase(BaseModel):
     """Base user settings schema"""
     receive_notifications: Optional[bool] = None
     dark_mode: Optional[bool] = None
+    language: Optional[str] = None
+    time_format: Optional[str] = None
+    date_format: Optional[str] = None
+    workout_duration: Optional[int] = None
+    workout_intensity: Optional[str] = None
 
 
 class UserSettingsUpdate(UserSettingsBase):

@@ -13,6 +13,10 @@ class UserSettings(Base):
     receive_notifications = Column(Boolean, default=True)
     dark_mode = Column(Boolean, default=False)
     language = Column(String(50), default="en")
+    time_format = Column(String(10), default="12")
+    date_format = Column(String(20), default="MM/DD/YYYY")
+    workout_duration = Column(Integer, default=60)
+    workout_intensity = Column(String(20), default="moderate")
     
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

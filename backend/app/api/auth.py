@@ -11,8 +11,13 @@ from app.core.security import (
     get_password_hash, 
     verify_password, 
     create_access_token,
+    create_verification_token,
+    decode_token,
     get_current_user
 )
+from app.services.email_service import send_verification_email
+from fastapi import BackgroundTasks
+from pydantic import BaseModel
 from app.core.config import settings
 from app.models.user import User
 from app.schemas.user import (
@@ -26,8 +31,8 @@ from app.schemas.user import (
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 
 
-@router.post("/register", response_model=Token, status_code=status.HTTP_201_CREATED)
-async def register(user_data: UserCreate, db: Session = Depends(get_db)):
+@router.post("/register", status_code=status.HTTP_201_CREATED)
+async def register(user_data: UserCreate, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     """Register a new user"""
     # Check if student_id already exists
     existing_user = db.query(User).filter(User.student_id == user_data.student_id).first()
@@ -62,17 +67,11 @@ async def register(user_data: UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_user)
     
-    # Create access token
-    access_token = create_access_token(
-        data={"sub": str(new_user.id)},
-        expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    )
+    # Send verification email
+    token = create_verification_token(new_user.email)
+    background_tasks.add_task(send_verification_email, new_user.email, token)
     
-    return Token(
-        access_token=access_token,
-        token_type="bearer",
-        user=UserResponse.model_validate(new_user)
-    )
+    return {"message": "User registered successfully. Please check your email to verify your account."}
 
 
 @router.post("/login", response_model=Token)
@@ -93,6 +92,12 @@ async def login(user_data: UserLogin, db: Session = Depends(get_db)):
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Account is deactivated"
         )
+        
+    if not user.is_email_verified:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Email is not verified. Please check your email to verify your account."
+        )
     
     # Create access token
     access_token = create_access_token(
@@ -105,6 +110,34 @@ async def login(user_data: UserLogin, db: Session = Depends(get_db)):
         token_type="bearer",
         user=UserResponse.model_validate(user)
     )
+
+class VerifyEmailRequest(BaseModel):
+    token: str
+
+@router.post("/verify-email")
+async def verify_email(request: VerifyEmailRequest, db: Session = Depends(get_db)):
+    """Verify user's email with token"""
+    from jose import JWTError
+    try:
+        payload = decode_token(request.token)
+        if payload.get("type") != "verification":
+            raise HTTPException(status_code=400, detail="Invalid token type")
+        email = payload.get("sub")
+        if not email:
+            raise HTTPException(status_code=400, detail="Invalid token payload")
+            
+        user = db.query(User).filter(User.email == email).first()
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+            
+        if user.is_email_verified:
+            return {"message": "Email is already verified"}
+            
+        user.is_email_verified = True
+        db.commit()
+        return {"message": "Email verified successfully"}
+    except JWTError:
+        raise HTTPException(status_code=400, detail="Invalid or expired token")
 
 
 @router.post("/token", response_model=Token)
@@ -120,6 +153,12 @@ async def login_for_access_token(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
+        )
+        
+    if not user.is_email_verified:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Email is not verified"
         )
     
     access_token = create_access_token(
