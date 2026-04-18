@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Email - FitTrack CUET</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .verification-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            background-color: var(--bg-color, #f4f6f9);
+        }
+        .verification-card {
+            background-color: var(--card-bg, #ffffff);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 500px;
+        }
+        .verification-icon {
+            font-size: 60px;
+            color: var(--primary-color, #ff3333);
+            margin-bottom: 20px;
+        }
+        .success-icon { color: #28a745; }
+        .error-icon { color: #dc3545; }
+        .verification-title {
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+        .verification-text {
+            color: var(--text-color, #333333);
+            margin-bottom: 25px;
+            font-size: 16px;
+        }
+        .btn-primary {
+            display: inline-block;
+            padding: 12px 25px;
+            background-color: var(--primary-color, #ff3333);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-hover, #e60000);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Theme Script Container -->
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        if (savedTheme === 'dark') document.body.classList.add('dark-theme');
+    </script>
+    
+    <div class="verification-container" id="verification-app">
+        <div class="verification-card">
+            <i class="fas fa-spinner fa-spin verification-icon" id="statusIcon"></i>
+            <h2 class="verification-title" id="statusTitle">Verifying Email...</h2>
+            <p class="verification-text" id="statusText">Please wait while we verify your email address.</p>
+            <a href="index.html" class="btn-primary" style="display: none;" id="loginBtn">Go to Login</a>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            const icon = document.getElementById('statusIcon');
+            const title = document.getElementById('statusTitle');
+            const text = document.getElementById('statusText');
+            const loginBtn = document.getElementById('loginBtn');
+            
+            if (!token) {
+                icon.className = 'fas fa-exclamation-circle verification-icon error-icon';
+                title.textContent = 'Invalid Verification Link';
+                text.textContent = 'The link is missing the verification token. Please check your email and try again.';
+                return;
+            }
+            
+            try {
+                // Call verification endpoint
+                const response = await fetch(`${API_BASE_URL}/auth/verify-email`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    icon.className = 'fas fa-check-circle verification-icon success-icon';
+                    title.textContent = 'Email Verified!';
+                    text.textContent = 'Your email has been successfully verified. You can now log into your account.';
+                    loginBtn.style.display = 'inline-block';
+                } else {
+                    throw new Error(data.detail || 'Verification failed');
+                }
+            } catch (error) {
+                icon.className = 'fas fa-times-circle verification-icon error-icon';
+                title.textContent = 'Verification Failed';
+                text.textContent = error.message;
+            }
+        });
+    </script>
+</body>
+</html>
