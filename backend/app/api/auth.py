@@ -11,7 +11,7 @@ from app.core.security import (
     get_password_hash, 
     verify_password, 
     create_access_token,
-    create_verification_token,
+    create_verification_otp,
     decode_token,
     get_current_user
 )
@@ -52,6 +52,8 @@ async def register(user_data: UserCreate, background_tasks: BackgroundTasks, db:
     
     # Create new user
     hashed_password = get_password_hash(user_data.password)
+    otp = create_verification_otp()
+    
     new_user = User(
         student_id=user_data.student_id,
         email=user_data.email,
@@ -60,7 +62,9 @@ async def register(user_data: UserCreate, background_tasks: BackgroundTasks, db:
         department=user_data.department,
         level=user_data.level,
         term=user_data.term,
-        phone=user_data.phone
+        phone=user_data.phone,
+        verification_otp=otp,
+        verification_otp_expires_at=datetime.utcnow() + timedelta(minutes=15)
     )
     
     db.add(new_user)
@@ -68,8 +72,7 @@ async def register(user_data: UserCreate, background_tasks: BackgroundTasks, db:
     db.refresh(new_user)
     
     # Send verification email
-    token = create_verification_token(new_user.email)
-    background_tasks.add_task(send_verification_email, new_user.email, token)
+    background_tasks.add_task(send_verification_email, new_user.email, otp)
     
     return {"message": "User registered successfully. Please check your email to verify your account."}
 
@@ -117,27 +120,29 @@ class VerifyEmailRequest(BaseModel):
 @router.post("/verify-email")
 async def verify_email(request: VerifyEmailRequest, db: Session = Depends(get_db)):
     """Verify user's email with token"""
-    from jose import JWTError
     try:
-        payload = decode_token(request.token)
-        if payload.get("type") != "verification":
-            raise HTTPException(status_code=400, detail="Invalid token type")
-        email = payload.get("sub")
-        if not email:
-            raise HTTPException(status_code=400, detail="Invalid token payload")
+        if not request.token or len(request.token) != 6:
+            raise HTTPException(status_code=400, detail="Invalid OTP format")
             
-        user = db.query(User).filter(User.email == email).first()
+        user = db.query(User).filter(User.verification_otp == request.token).first()
         if not user:
-            raise HTTPException(status_code=404, detail="User not found")
+            raise HTTPException(status_code=400, detail="Invalid or expired OTP code")
             
         if user.is_email_verified:
             return {"message": "Email is already verified"}
             
+        if user.verification_otp_expires_at and user.verification_otp_expires_at < datetime.utcnow():
+            raise HTTPException(status_code=400, detail="OTP code has expired")
+            
         user.is_email_verified = True
+        user.verification_otp = None
+        user.verification_otp_expires_at = None
         db.commit()
         return {"message": "Email verified successfully"}
-    except JWTError:
-        raise HTTPException(status_code=400, detail="Invalid or expired token")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Invalid request")
 
 
 @router.post("/token", response_model=Token)

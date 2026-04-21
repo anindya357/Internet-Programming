@@ -307,7 +307,7 @@
 }
 
 .exercise-item {
-    display: grid;
+    /* display: grid; */
     grid-template-columns: 2fr 1fr 1fr 1fr;
     gap: 0.75rem;
     margin-bottom: 0.75rem;
@@ -893,7 +893,7 @@
 }
 
 .status-active {
-    background: #d4edda;
+    background:#40611d;
     color: #155724;
 }
 

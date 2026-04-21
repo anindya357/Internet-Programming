@@ -119,12 +119,12 @@ async function handleRegister(e) {
         // Call backend API
         const responseData = await api.register(userData);
         
-        showNotification(responseData.message || 'Registration successful! Please check your email to verify your account.', 'success');
+        showNotification(responseData.message || 'Registration successful! Please check your email for the OTP to sign in.', 'success');
         submitBtn.innerHTML = 'Account Created <i class="fas fa-check"></i>';
         
         setTimeout(() => {
-            // Redirect to login page to let them verify
-            window.location.href = 'index.html';
+            // Redirect to verify email page
+            window.location.href = 'verify-email.html';
         }, 3000);
     } catch (error) {
         showNotification(error.message || 'Registration failed. Please try again.', 'error');

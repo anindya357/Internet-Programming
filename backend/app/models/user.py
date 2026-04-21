@@ -25,6 +25,10 @@ class User(Base):
     is_active = Column(Boolean, default=True)
     is_admin = Column(Boolean, default=False)
     
+    # Email Verification OTP
+    verification_otp = Column(String(6), nullable=True)
+    verification_otp_expires_at = Column(DateTime, nullable=True)
+    
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     last_active_at = Column(DateTime, nullable=True)

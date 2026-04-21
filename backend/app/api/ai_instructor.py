@@ -9,6 +9,7 @@ from app.core.database import get_db
 from app.core.security import get_current_user
 from app.models.user import User
 from app.models.chat_history import ChatHistory
+from app.models.equipment import Equipment
 from app.schemas.chat import (
     ChatMessageCreate,
     ChatMessageResponse,
@@ -41,11 +42,31 @@ async def chat_with_ai(
             for h in reversed(history)
         ]
     
+    # Get available equipment from the database
+    available_equipment = None
+    try:
+        equipment_list = db.query(Equipment).filter(Equipment.is_available == True).all()
+        if equipment_list:
+            categories = {}
+            for eq in equipment_list:
+                if eq.category not in categories:
+                    categories[eq.category] = []
+                categories[eq.category].append(eq.name)
+            
+            eq_str = []
+            for cat, items in categories.items():
+                eq_str.append(f"{cat}: {', '.join(items)}")
+            available_equipment = "\n".join(eq_str)
+    except Exception as e:
+        print(f"Error fetching equipment: {e}")
+        pass
+
     # Get AI response
     ai_response = await gemini_service.get_response(
         question=request.question,
         context=request.context,
-        chat_history=chat_history
+        chat_history=chat_history,
+        available_equipment=available_equipment
     )
     
     # Save to chat history

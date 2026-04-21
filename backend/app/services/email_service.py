@@ -7,8 +7,6 @@ def send_verification_email(to_email: str, token: str):
         print("Warning: SMTP_USER or SMTP_PASSWORD not set. Skipping verification email.")
         return False
         
-    verification_link = f"{settings.FRONTEND_URL}/verify-email.html?token={token}"
-    
     msg = EmailMessage()
     msg['Subject'] = 'Verify your FitTrack CUET Email'
     msg['From'] = settings.SMTP_USER
@@ -18,11 +16,10 @@ def send_verification_email(to_email: str, token: str):
     <html>
       <body>
         <h2>Welcome to FitTrack CUET!</h2>
-        <p>Please click the link below to verify your email address and activate your account:</p>
-        <p><a href="{verification_link}" style="padding: 10px 15px; background-color: #ff3333; color: white; text-decoration: none; border-radius: 5px;">Verify Email</a></p>
-        <p>Alternatively, you can copy and paste this URL into your browser:</p>
-        <p>{verification_link}</p>
-        <p>This link will expire in 24 hours.</p>
+        <p>Please use the following One-Time Password (OTP) to verify your email address and activate your account:</p>
+        <h3 style="letter-spacing: 5px; color: #ff3333; font-size: 24px; font-weight: bold;">{token}</h3>
+        <p>Enter this code on the verification page.</p>
+        <p>This OTP will expire in 15 minutes.</p>
       </body>
     </html>
     """

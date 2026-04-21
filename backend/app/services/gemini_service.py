@@ -19,9 +19,9 @@ class GeminiService:
         if self.api_key:
             genai.configure(api_key=self.api_key)
             # Use gemini-pro as it's the most stable and widely available model
-            self.model = genai.GenerativeModel('gemini-2.5-flash')
+            self.model = genai.GenerativeModel('gemini-2.0-flash')
     
-    def _get_system_prompt(self, context: Optional[str] = None) -> str:
+    def _get_system_prompt(self, context: Optional[str] = None, available_equipment: Optional[str] = None) -> str:
         """Get the system prompt for the fitness assistant"""
         base_prompt = """You are FitTrack AI, a knowledgeable and friendly fitness instructor assistant for the FitTrack CUET gymnasium. 
 Your role is to help gym members with:
@@ -42,6 +42,9 @@ Guidelines:
 
 IMPORTANT: You are NOT a medical professional. Always advise users to consult with healthcare providers for medical issues, injuries, or health conditions."""
 
+        if available_equipment:
+            base_prompt += f"\n\nCRITICAL RULE FOR WORKOUT & EQUIPMENT SUGGESTIONS:\nIf the user asks for exercise, workout, or equipment suggestions, you MUST ONLY suggest workouts that can be performed using the following equipment available in our gym:\n{available_equipment}\nDo NOT suggest any exercises or workouts that require equipment not listed here. If an exercise requires missing equipment, suggest a valid alternative using the available equipment or bodyweight."
+
         context_prompts = {
             "workout": "\n\nThe user is asking about workouts and exercises. Focus on exercise techniques, workout plans, sets, reps, and training advice.",
             "diet": "\n\nThe user is asking about diet and nutrition. Focus on meal planning, macros, calorie intake, and healthy eating advice.",
@@ -59,7 +62,8 @@ IMPORTANT: You are NOT a medical professional. Always advise users to consult wi
         self, 
         question: str, 
         context: Optional[str] = None,
-        chat_history: Optional[List[dict]] = None
+        chat_history: Optional[List[dict]] = None,
+        available_equipment: Optional[str] = None
     ) -> str:
         """Get a response from Gemini AI"""
         if not self.model:
@@ -67,7 +71,7 @@ IMPORTANT: You are NOT a medical professional. Always advise users to consult wi
         
         try:
             # Build the prompt
-            system_prompt = self._get_system_prompt(context)
+            system_prompt = self._get_system_prompt(context, available_equipment)
             
             # Build conversation history if provided
             conversation = ""
@@ -111,18 +115,20 @@ The required JSON structure for the array is:
 [
   {
     "meal_type": "Breakfast",
+    "name": "Breakfast",
     "time": "08:00 AM",
+    "icon": "fa-mug-hot",
+    "calories": 450,
+    "macros": {
+      "protein": 25,
+      "carbs": 45,
+      "fats": 15
+    },
     "items": [
       {
-        "name": "Oatmeal",
-        "portion": "1 cup",
-        "calories": 150,
-        "protein": 5.0,
-        "carbs": 27.0,
-        "fat": 3.0
+        "name": "1 cup of Oatmeal with berries"
       }
-    ],
-    "total_calories": 150
+    ]
   }
 ]
 """
@@ -135,7 +141,7 @@ User Medical Profile:
 User Diet Preferences & Goals:
 {diet_prefs}
 
-Please generate a structured daily meal plan (matching the requested number of meals) that fits these constraints."""
+Please generate a structured daily meal plan (matching the requested number of meals) that fits these constraints. Make sure the total sum of `calories`, `protein`, `carbs`, and `fats` across all meals strictly adds up to the user's provided target calories, protein target, carbs target, and fat target."""
 
         try:
             response = self.model.generate_content(prompt)
