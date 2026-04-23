@@ -1,4 +1,4 @@
-absl-py==2.2.2
+﻿absl-py==2.2.2
 aiobotocore==2.24.2
 aiohappyeyeballs==2.6.1
 aiohttp==3.12.15
@@ -219,7 +219,7 @@ rsa==4.9.1
 s3fs==2025.9.0
 safetensors==0.7.0
 scikit-learn==1.6.1
-scipy==1.15.3
+scipy==1.10.1
 seaborn==0.13.2
 sentencepiece==0.2.0
 shellingham==1.5.4
