@@ -1,4 +1,4 @@
-absl-py==2.2.2
+﻿absl-py==2.2.2
 aiobotocore==2.24.2
 aiohappyeyeballs==2.6.1
 aiohttp==3.12.15
@@ -204,7 +204,6 @@ pyttsx3==2.98
 pytweening==1.2.0
 pytz==2025.2
 pywhatkit==5.4
-pywin32==310
 PyYAML==6.0.3
 pyzmq==27.1.0
 react==4.3.0
