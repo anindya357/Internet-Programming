@@ -234,6 +234,7 @@ img {
     font-size: 1rem;
     transition: var(--transition);
     font-family: inherit;
+    width: 100%;
 }
 
 .form-group input:focus,

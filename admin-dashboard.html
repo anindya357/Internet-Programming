@@ -250,16 +250,17 @@
                 <h2><i class="fas fa-plus-circle"></i> Add New Equipment</h2>
                 <button class="modal-close" onclick="closeAddEquipmentModal()">&times;</button>
             </div>
-            <form id="addEquipmentForm">
-                <div class="form-group">
-                    <label for="equipmentName">Equipment Name</label>
-                    <input type="text" id="equipmentName" name="name" required>
-                </div>
-
-                <div class="form-row">
+            <form id="addEquipmentForm" style="display: flex; flex-direction: column;">
+                <div class="modal-body" style="padding: 1.5rem; max-height: 60vh; overflow-y: auto;">
                     <div class="form-group">
-                        <label for="equipmentCategory">Category</label>
-                        <select id="equipmentCategory" name="category" required>
+                        <label for="equipmentName">Equipment Name</label>
+                        <input type="text" id="equipmentName" name="name" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="equipmentCategory">Category</label>
+                            <select id="equipmentCategory" name="category" required>
                             <option value="">Select Category</option>
                             <option value="Cardio">Cardio</option>
                             <option value="Strength">Strength</option>
@@ -316,11 +317,12 @@
                       <label for="equipmentSafetyTips">Safety Tips</label>
                       <textarea id="equipmentSafetyTips" name="safety_tips" rows="2"></textarea>
                   </div>
-                  <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
-                      <button type="button" class="btn btn-secondary" onclick="closeAddEquipmentModal()">Cancel</button>
-                      <button type="submit" class="btn btn-primary">Save Equipment</button>
-                  </div>
-              </form>
+                </div>
+                <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px; padding: 1.5rem; border-top: 1px solid var(--border-color);">
+                    <button type="button" class="btn btn-secondary" onclick="closeAddEquipmentModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Equipment</button>
+                </div>
+            </form>
           </div>
       </div>
 

@@ -1916,7 +1916,7 @@
     padding: 1.5rem;
     background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
     text-align: center;
-    color: var(--text-dark);
+    color: #1e293b;
     font-size: 1rem;
     font-weight: 500;
     border-top: 2px solid var(--border-color);
