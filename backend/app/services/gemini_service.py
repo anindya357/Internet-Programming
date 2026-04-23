@@ -19,7 +19,7 @@ class GeminiService:
         if self.api_key:
             genai.configure(api_key=self.api_key)
             # Use gemini-pro as it's the most stable and widely available model
-            self.model = genai.GenerativeModel('gemini-2.0-flash')
+            self.model = genai.GenerativeModel('gemini-2.5-flash-lite')
     
     def _get_system_prompt(self, context: Optional[str] = None, available_equipment: Optional[str] = None) -> str:
         """Get the system prompt for the fitness assistant"""
