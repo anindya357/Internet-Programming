@@ -5,6 +5,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 from app.core.config import settings
 from app.core.database import create_tables, engine
 from app.api import auth, users, workouts, equipment, medical_profile, diet, admin, ai_instructor, notifications
