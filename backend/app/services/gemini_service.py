@@ -1,6 +1,8 @@
 """
 Gemini AI Service for Fitness Assistant
 """
+import warnings
+warnings.filterwarnings("ignore", category=FutureWarning)
 import google.generativeai as genai
 from app.core.config import settings
 from typing import Optional, List
