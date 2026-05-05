@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Workout History - FitTrack CUET</title>
+    <title>Workout - FitTrack CUET</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/pages.css">
     <link rel="stylesheet" href="css/additional.css">
@@ -26,7 +26,7 @@
             </button>
             
             <ul class="nav-menu" id="navMenu">
-                <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>                <li><a href="equipment.html"><i class="fas fa-dumbbell"></i> Equipment</a></li>                <li><a href="workout-history.html" class="active"><i class="fas fa-history"></i> Workout History</a></li>
+                <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>                <li><a href="equipment.html"><i class="fas fa-dumbbell"></i> Equipment</a></li>                <li><a href="workout-history.html" class="active"><i class="fas fa-history"></i> Workout</a></li>
                 <li><a href="ai-instructor.html"><i class="fas fa-robot"></i> AI Instructor</a></li>
                 <li><a href="diet-plan.html"><i class="fas fa-utensils"></i> Diet Plan</a></li>
                 <li><a href="medical-profile.html"><i class="fas fa-user-md"></i> Medical Profile</a></li>
@@ -63,7 +63,7 @@
             <!-- Page Header -->
             <section class="page-header">
                 <div>
-                    <h1><i class="fas fa-history"></i> Workout History</h1>
+                    <h1><i class="fas fa-history"></i> Workout</h1>
                     <p>Track and manage your fitness journey</p>
                 </div>
                 <button class="btn btn-primary" onclick="openWorkoutModal()">
@@ -130,7 +130,7 @@
                 </div>
             </section>
 
-            <!-- Workout History List -->
+            <!-- Workout List -->
             <section class="workout-history-section">
                 <div class="workout-list" id="workoutList">
                     <!-- Workout items will be dynamically loaded -->
@@ -217,16 +217,67 @@
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="notes">Notes (Optional)</label>
-                    <textarea id="notes" name="notes" rows="3" placeholder="How did you feel? Any observations..."></textarea>
-                </div>
-
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" onclick="closeWorkoutModal()">Cancel</button>
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i> Save Workout
+                        <i class="fas fa-play"></i> Start Workout
                     </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Timer Modal -->
+    <div id="timerModal" class="modal">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <div class="modal-header">
+                <h2><i class="fas fa-stopwatch"></i> Workout Timer</h2>
+            </div>
+            <div class="modal-body">
+                <div class="timer-display" style="font-size: 4rem; font-weight: bold; color: var(--primary-color); margin: 20px 0;" id="timerDisplay">
+                    00:00:00
+                </div>
+                <p id="timerWorkoutName" style="font-size: 1.2rem; color: var(--text-light); margin-bottom: 20px;"></p>
+            </div>
+            <div class="modal-footer" style="justify-content: center;">
+                <button type="button" class="btn btn-secondary" onclick="confirmStopTimer()" style="background-color: var(--danger-color); color: white; border-color: var(--danger-color);">
+                    <i class="fas fa-stop"></i> Stop Timer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cancel Timer Warning Modal -->
+    <div id="cancelTimerModal" class="modal" style="z-index: 10000;">
+        <div class="modal-content" style="max-width: 350px;">
+            <div class="modal-header">
+                <h3>Stop Workout?</h3>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to stop? Your workout will not be saved.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="resumeTimer()">Keep Going</button>
+                <button type="button" class="btn btn-primary" style="background-color: var(--danger-color); border-color: var(--danger-color);" onclick="cancelWorkout()">Yes, Stop</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div id="feedbackModal" class="modal" style="z-index: 10000;">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2>Workout Complete! 🎉</h2>
+            </div>
+            <form id="feedbackForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="workoutFeedback">How do you feel?</label>
+                        <textarea id="workoutFeedback" name="notes" rows="3" placeholder="Any observations..." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save Workout</button>
                 </div>
             </form>
         </div>

@@ -1,5 +1,5 @@
 // ===========================
-// Workout History Functions
+// Workout Functions
 // ===========================
 
 // Workouts data loaded from API
@@ -277,16 +277,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
 
                 // Call API
-                await api.createWorkout(formData);
-                
-                // Reload workouts
-                await loadWorkouts();
-                
-                // Close modal and reset form
-                closeWorkoutModal();
-                workoutForm.reset();
-                
-                showNotification('Workout logged successfully!', 'success');
+                // Removed api.createWorkout(formData)
+                // Start timer instead
+                startTimerLogic(formData);
             } catch (error) {
                 showNotification(error.message || 'Failed to save workout', 'error');
             } finally {
@@ -388,3 +381,121 @@ function updateWorkoutStats(response) {
     
     if (streakElem) streakElem.textContent = streak;
 }
+
+
+// --- Workout Timer Feature Variables ---
+let currentWorkoutTimerInterval = null;
+let currentWorkoutTimeRemaining = 0;
+let currentWorkoutFormData = null;
+
+// Starts the timer
+function startTimerLogic(formData) {
+    currentWorkoutFormData = formData;
+    currentWorkoutTimeRemaining = (formData.duration || 1) * 60; // convert minutes to seconds
+
+    // Close log workout form modal properly
+    closeWorkoutModal();
+    document.getElementById('workoutForm').reset();
+    
+    // Setup and show timer modal
+    const timerDisplay = document.getElementById('timerDisplay');
+    const timerName = document.getElementById('timerWorkoutName');
+    
+    // Don't show notes on the timer, it shouldn't have been in the modal
+    
+    timerName.textContent = formData.name || 'Logging Workout...';
+    updateTimerDisplayUI();
+    
+    document.getElementById('timerModal').classList.add('active');
+    
+    // Start countdown
+    clearInterval(currentWorkoutTimerInterval);
+    currentWorkoutTimerInterval = setInterval(() => {
+        currentWorkoutTimeRemaining--;
+        if (currentWorkoutTimeRemaining <= 0) {
+            triggerWorkoutFeedback(); // Time is up!
+        } else {
+            updateTimerDisplayUI();
+        }
+    }, 1000);
+}
+
+function updateTimerDisplayUI() {
+    const hours = Math.floor(currentWorkoutTimeRemaining / 3600);
+    const minutes = Math.floor((currentWorkoutTimeRemaining % 3600) / 60);
+    const seconds = currentWorkoutTimeRemaining % 60;
+    
+    document.getElementById('timerDisplay').textContent = 
+        (hours > 0 ? (hours.toString().padStart(2, '0') + ':') : '') +
+        minutes.toString().padStart(2, '0') + ':' +
+        seconds.toString().padStart(2, '0');
+}
+
+function confirmStopTimer() {
+    // Show warning modal instead of stopping right away
+    document.getElementById('cancelTimerModal').classList.add('active');
+}
+
+function resumeTimer() {
+    // Dismiss warning modal, keep timer running behind scene
+    document.getElementById('cancelTimerModal').classList.remove('active');
+}
+
+function cancelWorkout() {
+    // Cancel the actual run and shut down everything
+    clearInterval(currentWorkoutTimerInterval);
+    document.getElementById('cancelTimerModal').classList.remove('active');
+    document.getElementById('timerModal').classList.remove('active');
+    currentWorkoutFormData = null;
+    showNotification('Workout stopped. Nothing was saved.', 'info');
+}
+
+function triggerWorkoutFeedback() {
+    // Timer finished (or user completed)
+    clearInterval(currentWorkoutTimerInterval);
+    document.getElementById('timerModal').classList.remove('active');
+    
+    // Show Feedback Modal
+    document.getElementById('workoutFeedback').value = '';
+    document.getElementById('feedbackModal').classList.add('active');
+}
+
+// Handle Feedback form submission
+document.addEventListener('DOMContentLoaded', () => {
+    const feedbackForm = document.getElementById('feedbackForm');
+    if (feedbackForm) {
+        feedbackForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if(!currentWorkoutFormData) {
+                showNotification('Error: Original workout data lost', 'error');
+                return;
+            }
+            
+            const submitBtn = feedbackForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            
+            try {
+                // Merge notes with original form data
+                currentWorkoutFormData.notes = document.getElementById('workoutFeedback').value || '';
+                
+                // Final save to backend
+                await api.createWorkout(currentWorkoutFormData);
+                
+                // Hide modal and update UI
+                document.getElementById('feedbackModal').classList.remove('active');
+                await loadWorkouts(); // Assuming loadWorkouts is globally available in workout.js
+                
+                showNotification('Workout saved successfully with your feedback! 🎉', 'success');
+                currentWorkoutFormData = null; // Clean up
+            } catch (error) {
+                showNotification(error.message || 'Failed to save final workout', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        });
+    }
+});
